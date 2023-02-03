@@ -1,0 +1,43 @@
+{
+    "additionParents": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/additionParents",
+        "references": []
+    },
+    "owner": "service_device-simulator",
+    "childDevices": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/childDevices",
+        "references": []
+    },
+    "childAssets": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/childAssets",
+        "references": []
+    },
+    "creationTime": "2021-01-14T18:28:28.583Z",
+    "type": "c8y_MQTTDevice",
+    "lastUpdated": "2021-06-16T16:46:44.709Z",
+    "childAdditions": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/childAdditions",
+        "references": []
+    },
+    "name": "JBHTarget #1",
+    "assetParents": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/assetParents",
+        "references": []
+    },
+    "deviceParents": {
+        "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367/deviceParents",
+        "references": []
+    },
+    "self": "https://industrysolutions.cumulocity.com/inventory/managedObjects/37661367",
+    "id": "37661367",
+    "com_cumulocity_model_Agent": {},
+    "c8y_IsDevice": {},
+    "c8y_SupportedOperations": [
+        "jbhStart",
+        "jbhStop",
+        "c8y_Configuration",
+        "c8y_Restart",
+        "c8y_Firmware",
+        "c8y_Software"
+    ]
+}

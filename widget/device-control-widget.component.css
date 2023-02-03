@@ -1,0 +1,126 @@
+/** @format */
+
+.device-control-widget-container {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.small-icon {
+    width: 5em;
+    height: 5em;
+}
+
+img.small-icon.withhover:hover {
+    background: gray;
+}
+
+.grid-container {
+    display: inline-flex;
+    min-width: 100%;
+    flex-wrap: wrap;
+    gap: 1em;
+    text-align-last: justify;
+    justify-content: center;
+}
+
+.grid-item {
+    display: flex;
+    flex-flow: column;
+    padding: 0.5em;
+    text-align: center;
+    align-items: center;
+}
+
+.grid-element {
+    display: flex;
+    width: 100%;
+    flex-flow: column;
+    padding: 0.5em;
+    text-align: center;
+    align-items: center;
+}
+
+.padinline {
+    padding: 0.5em;
+    vertical-align: bottom;
+}
+
+.button-row {
+    display: flex;
+    width: 100%;
+    flex-flow: row;
+    padding: 0.25em;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+/**
+ config section
+**/
+
+.configSection {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    margin: 0.25em;
+    padding: 0.25em;
+}
+
+.row {
+    padding: 0.5em;
+}
+
+.col-layout {
+    display: inline-flex;
+    align-content: baseline;
+    align-items: center;
+}
+
+.help-icon {
+    margin-left: 5px;
+}
+
+.help-icon > img {
+    max-width: 20px;
+    max-height: 20px;
+}
+
+.label-with-help {
+    display: inline;
+}
+
+.preview {
+    width: 5em;
+    height: 5em;
+}
+
+img.imgctrl {
+    width: 50px;
+    height: 50px;
+}
+
+img.withhover:hover {
+    background: gray;
+}
+
+.op-container {
+    display: inline-flex;
+    min-width: 100%;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.op-item {
+    display: flex;
+    flex-flow: column;
+    padding: 0.5em;
+}
+
+.mdlstyled-input {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    width: 85%;
+}
+
+.mdlstyled-input:focus {
+    outline: none;
+}

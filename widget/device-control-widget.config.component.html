@@ -1,0 +1,612 @@
+<div>
+  <div class="configSection">
+    <h4 translate>Select one or more Devices of the same type</h4>
+    <div class="row form-group">
+      <div class="col-lg-12">
+        <label
+          class="label-with-help"
+          for="deviceSelector"
+          class="label-with-help"
+          translate
+          >Select device
+          <span class="help-icon">
+            <img
+              src="{{ CONST_HELP_IMAGE_FILE }}"
+              alt="help tooltip"
+              title="Select one or more devices for the control widget."
+            />
+          </span>
+        </label>
+        <ng-select
+          [items]="rawDevices | async"
+          [multiple]="true"
+          bindLabel="name"
+          [closeOnSelect]="false"
+          [(ngModel)]="widgetHelper.getWidgetConfig().selectedDevices"
+          (ngModelChange)="onConfigChanged()"
+        >
+          <ng-template
+            ng-option-tmp
+            let-item="item"
+            let-item$="item$"
+            let-index="index"
+          >
+            <input
+              id="item-{{ index }}"
+              type="checkbox"
+              [ngModel]="item$.selected"
+            />
+            {{ item.name }}
+          </ng-template>
+        </ng-select>
+      </div>
+    </div>
+
+    <h4 translate>Select or upload an icon to represent the devices.</h4>
+    <div class="row form-group">
+      <!-- icon choice -->
+      <div class="col-lg-1">
+        <div class="input-group mb-1">
+          <div class="input-group-prepend">
+            Device Icon
+            <span class="input-group-text help-icon" id="basic-addon1">
+              <input
+                style="display: none"
+                class="form-control"
+                type="file"
+                name="file-chooser"
+                id="file-chooser"
+                (change)="handleImage($event)"
+                accept="image/*"
+              />
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-layout">
+        <img
+          class="imgctrl withhover"
+          [src]="
+            widgetHelper.getWidgetConfig().deviceIcon('default-device')
+              | SafeImage
+          "
+          alt="Device Image"
+          title="Displayed on widget. (click to change)"
+          onClick="document.getElementById('file-chooser').click()"
+        />
+      </div>
+      <div class="col-lg-2 col-layout">
+        <div class="input-group mb-1">
+          <div class="input-group-prepend">
+            Icon Height
+            <input
+              class="form-control-range"
+              type="range"
+              min="50"
+              max="300"
+              [value]="widgetHelper.getWidgetConfig().deviceImageWidth"
+              #xImage
+              (input)="
+                widgetHelper.getWidgetConfig().setImageSize(xImage.value)
+              "
+            />
+
+            <output
+              >{{ widgetHelper.getWidgetConfig().imageHeight() }} x
+              {{ widgetHelper.getWidgetConfig().imageWidth() }}</output
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- this.widgetHelper.getWidgetConfig().overrideDashboardDevice -->
+    <div class="row form-group" *ngIf="this.widgetHelper.getDeviceTarget()">
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="overrideDevice"
+          translate
+        >
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="overrideDevice"
+            [(ngModel)]="
+              this.widgetHelper.getWidgetConfig().overrideDashboardDevice
+            "
+            (ngModelChange)="onConfigChanged()"
+          />
+          Override dashboard device<span class="help-icon">
+            <img
+              src="{{ CONST_HELP_IMAGE_FILE }}"
+              alt="help tooltip"
+              title="On a template dashboard allow user to select the device(s)."
+            />
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="showav"
+          translate
+        >
+        </label>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showav"
+          [(ngModel)]="widgetHelper.getWidgetConfig().showAvailability"
+          (ngModelChange)="onConfigChanged()"
+        />
+        Show availability<span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Display availability on widget."
+          />
+        </span>
+      </div>
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="showal"
+          translate
+        >
+        </label>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showal"
+          [(ngModel)]="widgetHelper.getWidgetConfig().showAlarms"
+          (ngModelChange)="onConfigChanged()"
+        />
+        Show alarms<span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Show alarms on device."
+          />
+        </span>
+      </div>
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="showop"
+          translate
+        >
+        </label>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showop"
+          [(ngModel)]="widgetHelper.getWidgetConfig().showOperations"
+          (ngModelChange)="onConfigChanged()"
+        />
+        Show operations<span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Show operations on device."
+          />
+        </span>
+      </div>
+
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="showfilters"
+          translate
+        >
+        </label>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showfilters"
+          [(ngModel)]="widgetHelper.getWidgetConfig().showFilters"
+          (ngModelChange)="onConfigChanged()"
+        />
+        Show filters<span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Should the search and at risk filters be shown."
+          />
+        </span>
+      </div>
+
+      <!-- <div class="m-r-8">
+                            <label class="c8y-switch" translate>
+                                <input type="checkbox" name="showrisk"
+                                       [(ngModel)]="widgetHelper.getWidgetConfig().atRisk"
+                                       (change)="updateDeviceStates()">
+                                <span></span> only show devices at risk
+                            </label>
+                        </div> -->
+
+      <div class="form-check-inline col-lg-2">
+        <label
+          class="label-with-help"
+          class="form-check-label"
+          for="showatRisk"
+          translate
+        >
+        </label>
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showatRisk"
+          [(ngModel)]="widgetHelper.getWidgetConfig().atRisk"
+          (ngModelChange)="onConfigChanged()"
+        />
+        Show at risk only<span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Only show at risk devices."
+          />
+        </span>
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div
+        *ngFor="let mo of this.widgetHelper.getWidgetConfig().selectedDevices"
+      >
+        <div *ngIf="mo.c8y_IsDeviceGroup">
+          <div class="col-lg-12">
+            <label class="label-with-help">
+              {{ mo.name }} group dashboard url
+            </label>
+            <input
+              class="form-control"
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="
+                this.widgetHelper.getWidgetConfig().deviceSettings[
+                  'group' + mo.name
+                ]
+              "
+              (change)="onConfigChanged()"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-2">
+      <label class="label-with-help">
+        Add Toggle
+        <span class="help-icon">
+          <img
+            src="{{ CONST_HELP_IMAGE_FILE }}"
+            alt="help tooltip"
+            title="Add operations that toggle managed object flags."
+          />
+        </span>
+      </label>
+      <button
+        style="color: #1776bf"
+        type="button"
+        class="button"
+        (click)="addToggle()"
+      >
+        <i c8yIcon="plus"></i>
+      </button>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-lg-6">
+        <label class="label-with-help">
+          Select operations
+          <span class="help-icon">
+            <img
+              src="{{ CONST_HELP_IMAGE_FILE }}"
+              alt="help tooltip"
+              title="Select operations to be supported."
+            />
+          </span>
+        </label>
+        <ng-select
+          [items]="rawOperations | async"
+          [multiple]="true"
+          bindLabel="operation"
+          [closeOnSelect]="false"
+          [(ngModel)]="widgetHelper.getWidgetConfig().selectedOperations"
+          (ngModelChange)="onConfigChanged()"
+        >
+          <ng-template
+            ng-option-tmp
+            let-item="item"
+            let-item$="item$"
+            let-index="index"
+          >
+            <input
+              id="item-{{ index }}"
+              type="checkbox"
+              [ngModel]="item$.selected"
+            />
+            {{ item.operation }}
+          </ng-template>
+        </ng-select>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-lighter card-group flex-wrap flex-grow j-c-evenly">
+    <div
+      class="col card m-8"
+      *ngFor="
+        let op of widgetHelper.getWidgetConfig().getOperationsList();
+        let i = index
+      "
+    >
+      <div class="card-block">
+        <div *ngIf="op.toggle; else normalOp">
+          <h4>Toggle</h4>
+          <label> Display Name </label>
+
+          <input
+            class="form-control"
+            type="text"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="op.name"
+            [value]="op.name"
+            (change)="onConfigChanged()"
+          />
+          <label> Managed Object node </label>
+          <input
+            class="form-control"
+            type="text"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="op.source"
+            [value]="op.source"
+            (change)="onConfigChanged()"
+          />
+          <button
+            style="color: #1776bf"
+            type="button"
+            class="button"
+            (click)="removeToggle(i)"
+          >
+            <i c8yIcon="minus"></i>
+            Delete
+          </button>
+        </div>
+
+        <ng-template #normalOp>
+          <div class="row">
+            <h4>Operation</h4>
+          </div>
+          <div class="row">
+            <label class="label-with-help">
+              Add duplicate
+              <span class="help-icon">
+                <img
+                  src="{{ CONST_HELP_IMAGE_FILE }}"
+                  alt="help tooltip"
+                  title="Add an extra version of this command."
+                />
+              </span>
+            </label>
+            <button
+              style="color: #1776bf"
+              type="button"
+              class="button"
+              (click)="addCommand(op)"
+            >
+              <i c8yIcon="plus" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="row">
+            <label class="label-with-help">
+              Delete
+              <span class="help-icon">
+                <img
+                  src="{{ CONST_HELP_IMAGE_FILE }}"
+                  alt="help tooltip"
+                  title="Add an extra version of this command."
+                />
+              </span>
+            </label>
+            <button
+              style="color: #1776bf"
+              type="button"
+              class="button"
+              (click)="deleteCommand(i)"
+            >
+              <i c8yIcon="minus" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="row">
+            <label> Tooltip text </label>
+
+            <input
+              class="form-control"
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="op.name"
+              [value]="op.name"
+              (change)="onConfigChanged()"
+            />
+          </div>
+          <div class="row">
+            <label> Operation </label>
+
+            <input
+              class="form-control"
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="op.operation"
+              [value]="op.operation"
+              (change)="onConfigChanged()"
+              [readonly]='!op.unsupported'
+            />
+          </div>
+          <div class="row">
+            <label> Button Icon </label>
+
+            <ng-select
+              [items]="icons"
+              bindLabel="name"
+              [closeOnSelect]="true"
+              [multiple]="false"
+              [(ngModel)]="op.icon"
+              placeholder="select icon for operation"
+              (change)="onConfigChanged()"
+            >
+              <ng-template
+                class="mb-1"
+                ng-label-tmp
+                let-item="item"
+                let-index="index"
+              >
+                <i [c8yIcon]="item.key" aria-hidden="true"></i>
+                <!-- <i c8y-icon="minus-circle" class="text-danger dlt-c8y-icon-minus-circle"></i> -->
+                {{ item.name }}
+              </ng-template>
+              <ng-template
+                class="mb-1"
+                ng-option-tmp
+                let-item="item"
+                let-index="index"
+              >
+                <i [c8yIcon]="item.key" aria-hidden="true"></i>
+                <!-- <span [ngClass]="'fa ' + item.key + ' fa-lg'" aria-hidden="true"></span> -->
+                {{ item.name }}
+              </ng-template>
+            </ng-select>
+          </div>
+          <div class="row">
+            <label> payload json </label>
+            <input
+              class="form-control"
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="op.payload"
+              [value]="op.payload"
+              (change)="onConfigChanged()"
+            />
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="align-content: center; width: 100%">Preview</h4>
+  <div class="card-group bg-gray-lighter flex-wrap flex-grow j-c-evenly">
+    <!-- Device list -->
+    <div
+      class="col card m-8"
+      style="margin-bottom: 8px"
+      *ngFor="let mo of widgetHelper.getWidgetConfig().assets; let i = index"
+    >
+      <ng-container *ngIf="i < 3">
+        <!-- HEADER -->
+        <!-- <div class="card-header separator"> -->
+        <div class="card-block">
+          <a
+            *ngIf="
+              widgetHelper.getWidgetConfig().dashboardUrl(mo);
+              else justimage
+            "
+            href="{{ widgetHelper.getWidgetConfig().dashboardUrl(mo) }}"
+          >
+            <img
+              [ngStyle]="{
+                height: widgetHelper.getWidgetConfig().imageHeight(),
+                width: widgetHelper.getWidgetConfig().imageWidth()
+              }"
+              [src]="
+                widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage
+              "
+              alt="Device"
+              title="{{ mo.name }}"
+            />
+          </a>
+          <ng-template #justimage>
+            <img
+              [ngStyle]="{
+                height: widgetHelper.getWidgetConfig().imageHeight(),
+                width: widgetHelper.getWidgetConfig().imageWidth()
+              }"
+              [src]="
+                widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage
+              "
+              alt="Device"
+              title="{{ mo.name }}"
+            />
+          </ng-template>
+          <span class="grid-element card-title">
+            {{ mo.name }}
+          </span>
+          <!-- BODY -->
+          <ng-container *ngIf="widgetHelper.getWidgetConfig().showAvailability">
+            <!--widgetHelper.getWidgetConfig().operationIcon('heartbeat')-->
+            <span
+              [ngClass]="[
+                'grid-element badge badge-pill',
+                widgetHelper.getWidgetConfig().deviceStatus(mo)
+              ]"
+            >
+              {{ widgetHelper.getWidgetConfig().deviceStatusLabel(mo) }}
+            </span>
+          </ng-container>
+          <ng-container *ngIf="widgetHelper.getWidgetConfig().showAlarms">
+            <span
+              [ngClass]="[
+                'grid-element grid-element badge badge-pill',
+                widgetHelper.getWidgetConfig().alarmStatus(mo)
+              ]"
+            >
+              {{ widgetHelper.getWidgetConfig().getAlarmCount(mo) }} alarms
+            </span>
+          </ng-container>
+          <ng-container *ngIf="widgetHelper.getWidgetConfig().showOperations">
+            <div class="button-col">
+              <div
+                *ngFor="
+                  let op of widgetHelper.getWidgetConfig().selectedToggles
+                "
+              >
+                <label class="c8y-switch">
+                  <input type="checkbox" [checked]="mo[op.source]" />
+                  <span></span>{{ op.name }}
+                </label>
+              </div>
+            </div>
+            <div class="button-row">
+              <div
+                *ngFor="
+                  let op of widgetHelper.getWidgetConfig().selectedOperations
+                "
+              >
+                <button
+                  *ngIf="widgetHelper.getWidgetConfig().validOperation(mo, op)"
+                  style="color: #1776bf"
+                  type="button"
+                  class="button"
+                  title="{{ op.name }}"
+                >
+                  <i
+                    [c8yIcon]="widgetHelper.getWidgetConfig().operationIcon(op)"
+                    aria-hidden="true"
+                  ></i>
+                  <!-- <i [ngClass]="'c8y-icon ' + widgetHelper.getWidgetConfig().operationIcon(op)"></i> -->
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <!-- row -->
+</div>

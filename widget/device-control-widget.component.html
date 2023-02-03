@@ -1,0 +1,103 @@
+<div class="device-control-widget-container">
+
+    <div [hidden]="!widgetHelper.getWidgetConfig().showFilters">
+        <div class="d-flex" style="flex-wrap: wrap;">
+            <!-- Filter row-->
+            <div class="m-r-8">
+                <label class="c8y-switch" translate>
+                </label>
+                <input type="checkbox" name="showrisk"
+                       [(ngModel)]="widgetHelper.getWidgetConfig().atRisk"
+                       (change)="updateDeviceStates()">
+                <span></span> only show devices at risk
+            </div>
+            <div class="input-group input-group-search flex-grow" style="width: inherit;">
+                <input
+                       type="search"
+                       class="form-control"
+                       placeholder="filter by name"
+                       #assetfilter />
+                <span class="input-group-addon">
+                    <i c8yIcon="search"
+                       *ngIf="!this.widgetHelper.getWidgetConfig().deviceFilter || this.widgetHelper.getWidgetConfig().deviceFilter.length === 0"></i>
+                    <i
+                       c8yIcon="times"
+                       class="text-muted"
+                       *ngIf="this.widgetHelper.getWidgetConfig().deviceFilter && this.widgetHelper.getWidgetConfig().deviceFilter.length > 0"
+                       (click)="this.widgetHelper.getWidgetConfig().deviceFilter = ''"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Device list -->
+    <div class="card-group bg-gray-lighter" style="justify-content: center;">
+        <div class="card m-8" style="margin-bottom: 8px;"
+             *ngFor="let mo of widgetHelper.getWidgetConfig().filteredAssets">
+
+            <!-- HEADER -->
+            <!-- <div class="card-header separator"> -->
+            <div class="card-block">
+
+                <div style="text-align: center;">
+                    <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
+                       href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
+                        <img
+                             [ngStyle]='{height:widgetHelper.getWidgetConfig().imageHeight(),width:widgetHelper.getWidgetConfig().imageWidth()}'
+                             [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage"
+                             alt="Device"
+                             title="{{mo.name}}">
+                    </a>
+                    <ng-template #justimage>
+                        <img [ngStyle]='{height:widgetHelper.getWidgetConfig().imageHeight(),width:widgetHelper.getWidgetConfig().imageWidth()}'
+                             [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage"
+                             alt="Device"
+                             title="{{mo.name}}">
+                    </ng-template>
+                    <span class=" grid-element card-title">
+                        {{mo.name}}
+                    </span>
+                </div>
+                <!-- BODY -->
+                <ng-container *ngIf="widgetHelper.getWidgetConfig().showAvailability">
+                    <!--widgetHelper.getWidgetConfig().operationIcon('heartbeat')-->
+                    <span
+                          [ngClass]="['grid-element badge badge-pill',widgetHelper.getWidgetConfig().deviceStatus(mo)]">
+                        {{widgetHelper.getWidgetConfig().deviceStatusLabel(mo)}}
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="widgetHelper.getWidgetConfig().showAlarms">
+                    <span
+                          [ngClass]="['grid-element grid-element badge badge-pill',widgetHelper.getWidgetConfig().alarmStatus(mo)]">
+                        {{widgetHelper.getWidgetConfig().getAlarmCount(mo)}} alarms
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="widgetHelper.getWidgetConfig().showOperations">
+                    <div class="button-col">
+                        <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedToggles">
+                            <label class="c8y-switch">
+                                <input type="checkbox"
+                                       [checked]="mo[op.source]"
+                                       (change)="performOperation(mo,op)">
+                                <span></span>{{op.name}}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="button-row">
+                        <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedOperations">
+                            <button *ngIf="widgetHelper.getWidgetConfig().validOperation(mo,op)"
+                                    style="color:#1776BF;"
+                                    type="button"
+                                    class="button"
+                                    (click)="performOperation(mo,op)"
+                                    title="{{op.name}}">
+                                    <i [c8yIcon]="widgetHelper.getWidgetConfig().operationIcon(op)" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
