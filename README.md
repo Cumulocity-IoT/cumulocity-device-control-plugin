@@ -50,10 +50,12 @@ NOTE: This guide assumes that you have followed the [installation](https://githu
 1. Open the Application Builder application from the app switcher (Next to your username in the top right)
 2. Add a new dashboard or navigate to an existing dashboard
 3. Click `Add Widget`
-4. Search for `Device Control`
-5. See below for the configuration options
+4. Search for `Device Control`.
+5. Click `Save`.
 
-![addwidget](images/addwidget.png)
+Congratulations! Device Control Widget is configured.
+
+## User Guide
 
 The widget configuration page contains a number of configuration attributes.
 
