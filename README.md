@@ -15,9 +15,8 @@ This widget allows display and control of devices and groups of devices.
 |--------------------|------------|-----------------------|
 | 2.x.x(coming soon) | >= 1016.x.x| 1.x.x                 | 
 
-  
 
-![](https://user-images.githubusercontent.com/32765455/94537868-f5452f00-0260-11eb-830e-e103546d9567.png)
+![Device_control](https://user-images.githubusercontent.com/99970126/220543051-2d91519a-0485-4139-92d2-9a285bad98d4.png)
 
 
 ## Features
