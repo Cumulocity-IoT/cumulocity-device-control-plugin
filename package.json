@@ -1,10 +1,10 @@
 {
   "name": "cumulocity-device-control-plugin",
-  "version": "1016.0.84",
-  "description": "The KPI Overview Widget help you to display the Device KPIs with customised KPI Name, icon, text, color and size.",
+  "version": "1.0.0-beta",
+  "description": "This Device Control widget allows to display and control devices and groups of devices.",
   "scripts": {
-    "start": "c8ycli server --env.beta=true",
-    "build": "c8ycli build --env.mode=production",
+    "start": "c8ycli server",
+    "build": "c8ycli build",
     "deploy": "c8ycli deploy",
     "postinstall": "ngcc",
     "prebuild": " gulp clean",
@@ -57,26 +57,30 @@
   },
   "c8y": {
     "application": {
-      "name": "cumulocity-device-control-plugin",
-      "description": "Cumulocity Device Control Module Federation",
+      "name": "Cumulocity Device Control Widget Plugin",
+      "description": "This Device Control widget allows to display and control devices and groups of devices.",
       "contextPath": "device-control-widget",
       "key": "device-control-widget-application-key",
-      "globalTitle": "Cumulocity Device Control Module Federation",
+      "globalTitle": "This Device Control widget allows to display and control devices and groups of devices.",
       "tabsHorizontal": true,
       "isPackage": true,
       "noAppSwitcher": true,
       "package": "plugin",
+      "requiredPlatformVersion": ">=1016.0.0",
+      "icon": {
+        "class": "fa fw fa-cogs"
+      },
       "exports": [
         {
           "name": "Cumulocity Device Control Plugin",
           "module": "DeviceControlWidgetModule",
           "path": "./widget/device-control-widget.module.ts",
-          "description": "The KPI Overview Widget help you to display the Device KPIs with customised KPI Name, icon, text, color and size."
+          "description": "This Device Control widget allows to display and control devices and groups of devices."
         }
       ],
       "remotes": {
         "widget-plugin": [
-          "WidgetPluginModule"
+          "DeviceControlWidgetModule"
         ]
       }
     },

@@ -122,9 +122,9 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
 
 
                 //Now we can try to send this.
-                console.log(op.payload);
+                //console.log(op.payload);
                 let payload = JSON.parse(op.payload);
-                console.log(payload);
+                //console.log(payload);
 
                 let operation: IOperation = {
                     deviceId: mo.id,
@@ -167,7 +167,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     }
 
     async updateDevice(mo: any): Promise<void> {
-        console.log("moSubs", mo);
+        //console.log("moSubs", mo);
         return;
     }
 

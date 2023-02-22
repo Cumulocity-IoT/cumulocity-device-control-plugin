@@ -30,10 +30,10 @@ import { DefaultSelectionModelFactory } from './selection-model';
 @Component({
     selector: "device-control-widget-config-component",
     templateUrl: "./device-control-widget.config.component.html",
-    styleUrls: ['./../node_modules/@ng-select/ng-select/themes/default.theme.css','./device-control-widget.component.css'],
+    styleUrls: ['./../node_modules/@ng-select/ng-select/themes/default.theme.css', './device-control-widget.component.css'],
     encapsulation: ViewEncapsulation.None,
     providers: [FormBuilder,
-      { provide: SELECTION_MODEL_FACTORY, useValue: DefaultSelectionModelFactory }
+        { provide: SELECTION_MODEL_FACTORY, useValue: DefaultSelectionModelFactory }
     ],
 })
 export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
@@ -68,7 +68,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
         this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService));
         this.widgetHelper.getWidgetConfig().deviceFilter = ""; //clear if you edit
-        console.log("OVERRIDE", this.widgetHelper.getWidgetConfig().overrideDashboardDevice, "DEVICE TARGET", this.widgetHelper.getDeviceTarget());
+        //console.log("OVERRIDE", this.widgetHelper.getWidgetConfig().overrideDashboardDevice, "DEVICE TARGET", this.widgetHelper.getDeviceTarget());
         if (!this.widgetHelper.getWidgetConfig().overrideDashboardDevice && this.widgetHelper.getDeviceTarget()) {
             //console.log("Device Target=", this.widgetHelper.getDeviceTarget());
             let { data, res } = await this.inventoryService.detail(this.widgetHelper.getDeviceTarget());
@@ -109,7 +109,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         let r: string[] = [];
 
         this.widgetHelper.getWidgetConfig().assets = [];
-        console.log("Selected", this.widgetHelper.getWidgetConfig().selectedDevices);
+        //console.log("Selected", this.widgetHelper.getWidgetConfig().selectedDevices);
         for (let index = 0; index < this.widgetHelper.getWidgetConfig().selectedDevices.length; index++) {
 
             const m = this.widgetHelper.getWidgetConfig().selectedDevices[index];
@@ -137,7 +137,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         //unique 
         r = [...new Set(r)];
         this.widgetHelper.getWidgetConfig().assets = [...new Set(this.widgetHelper.getWidgetConfig().assets)];
-        console.log("assets", this.widgetHelper.getWidgetConfig().assets);
+        //console.log("assets", this.widgetHelper.getWidgetConfig().assets);
 
         //map to objects
         let ops = r.map(o => {
@@ -149,11 +149,11 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
                 toggle: false,
                 source: "key",
                 description: "",
-                unsupported : (o === "User Defined"? true : false)
+                unsupported: (o === "User Defined" ? true : false)
             };
         });
 
-        console.log("ops", ops);
+        //console.log("ops", ops);
         this.rawOperations.next(ops);
         this.assets.next([...this.widgetHelper.getWidgetConfig().assets.sort((a, b) => a.name.localeCompare(b.name))]);
     }
@@ -180,7 +180,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     }
 
     addCommand(op: DeviceOperation) {
-        let copy =  _.cloneDeep(op);
+        let copy = _.cloneDeep(op);
         this.widgetHelper.getWidgetConfig().selectedOperations.push(
             copy
         );
