@@ -1,5 +1,5 @@
 
-# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.0.0-beta/device-control-widget-1.0.0-beta.zip)
+# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.0.0/device-control-widget-1.0.0.zip)
 
   
 
@@ -7,16 +7,16 @@
 This Device Control widget is the Cumulocity module federation plugin created using c8ycli. This plugin can be used in Application Builder or Cockpit.
 This widget allows display and control of devices and groups of devices.
 
-### Please note that this plugin is in currently under BETA mode.
+
 
 ### Please choose Device Control release based on Cumulocity/Application builder version:
 
 |APPLICATION BUILDER | CUMULOCITY | DEVICE CONTROL WIDGET |
 |--------------------|------------|-----------------------|
-| 2.x.x(coming soon) | >= 1016.x.x| 1.x.x                 | 
+| 2.x.x              | >= 1016.x.x| 1.x.x                 | 
 
 
-![Device_control](https://user-images.githubusercontent.com/99970126/220543051-2d91519a-0485-4139-92d2-9a285bad98d4.png)
+![Image](images/device.png)
 
 
 ## Features
@@ -38,7 +38,7 @@ This widget allows display and control of devices and groups of devices.
 
 ### Runtime Widget Deployment?
 
-* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.0.0-beta/device-control-widget-1.0.0-beta.zip) and install via Administrations(Beta mode) --> Ecosystems --> Applications --> Packages.
+* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.0.0/device-control-widget-1.0.0.zip) and install via Administrations --> Ecosystems --> Applications --> Packages.
 
 
 ## QuickStart
