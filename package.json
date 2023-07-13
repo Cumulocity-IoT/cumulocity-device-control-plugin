@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "This Device Control widget allows to display and control devices and groups of devices.",
   "scripts": {
-    "start": "c8ycli server",
-    "build": "c8ycli build --env.mode=production",
+    "start": "c8ycli server -u https://appbuilder.eu-latest.cumulocity.com",
+    "build": "c8ycli build --env.mode=development",
     "deploy": "c8ycli deploy",
     "postinstall": "ngcc",
     "prebuild": " gulp clean",
@@ -24,6 +24,7 @@
     "@angular/compiler": "14.0.6",
     "@angular/core": "14.0.6",
     "@angular/forms": "14.0.6",
+    "@angular/material": "^14.0.6",
     "@angular/platform-browser": "14.0.6",
     "@angular/platform-browser-dynamic": "14.0.6",
     "@angular/router": "14.0.6",
@@ -87,63 +88,63 @@
           "DeviceControlWidgetModule"
         ]
       },
-    "copy": [
-      {
-        "from": "images/device.png",
-        "to": "images/device.png"
-      },
-      {
-        "from": "images/initialoptions.png",
-        "to": "images/initialoptions.png"
-      },
-      {
-        "from": "images/choosedevices.gif",
-        "to": "images/choosedevices.gif"
-      },
-      {
-        "from": "images/chooseicon.gif",
-        "to": "images/chooseicon.gif"
-      },
-      {
-        "from": "images/operations.gif",
-        "to": "images/operations.gif"
-      },
-      {
-        "from": "images/toggle.gif",
-        "to": "images/toggle.gif"
-      },
-      {
-        "from": "images/toggleworking.gif",
-        "to": "images/toggleworking.gif"
-      },
-      {
-        "from": "images/templatedashboard.png",
-        "to": "images/templatedashboard.png"
-      },
-      {
-        "from": "images/groupdashboard.png",
-        "to": "images/groupdashboard.png"
-      },
-      {
-        "from": "images/grouptemplate.gif",
-        "to": "images/grouptemplate.gif"
-      },
-      {
-        "from": "images/grouplinks.gif",
-        "to": "images/grouplinks.gif"
-      },
-      {
-        "from": "images/filter.gif",
-        "to": "images/filter.gif"
-      },
-      {
-        "from": "LICENSE",
-        "to": "LICENSE.txt"
-      }
-    ]
+      "copy": [
+        {
+          "from": "images/device.png",
+          "to": "images/device.png"
+        },
+        {
+          "from": "images/initialoptions.png",
+          "to": "images/initialoptions.png"
+        },
+        {
+          "from": "images/choosedevices.gif",
+          "to": "images/choosedevices.gif"
+        },
+        {
+          "from": "images/chooseicon.gif",
+          "to": "images/chooseicon.gif"
+        },
+        {
+          "from": "images/operations.gif",
+          "to": "images/operations.gif"
+        },
+        {
+          "from": "images/toggle.gif",
+          "to": "images/toggle.gif"
+        },
+        {
+          "from": "images/toggleworking.gif",
+          "to": "images/toggleworking.gif"
+        },
+        {
+          "from": "images/templatedashboard.png",
+          "to": "images/templatedashboard.png"
+        },
+        {
+          "from": "images/groupdashboard.png",
+          "to": "images/groupdashboard.png"
+        },
+        {
+          "from": "images/grouptemplate.gif",
+          "to": "images/grouptemplate.gif"
+        },
+        {
+          "from": "images/grouplinks.gif",
+          "to": "images/grouplinks.gif"
+        },
+        {
+          "from": "images/filter.gif",
+          "to": "images/filter.gif"
+        },
+        {
+          "from": "LICENSE",
+          "to": "LICENSE.txt"
+        }
+      ]
+    },
+    "cli": {}
   },
-  "cli": {}
-},
   "browserslist": [
     "last 2 major versions"
   ]

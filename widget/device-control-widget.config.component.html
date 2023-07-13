@@ -1,4 +1,68 @@
 <div>
+  <div class="row col-sm-12">
+    <div class="col-sm-2">
+      <label style="margin-top: 4px;margin-left: -15px;"> Display as: </label>
+    </div>
+    <div class="col-sm-3" style="margin-left:-50px;">
+      <div class="c8y-select-wrapper">
+        <select class="form-control" [(ngModel)]="widgetHelper.getWidgetConfig().defaultListView"
+          (change)="displayList($event.target.value)">
+          <option value="1">Grid</option>
+          <option value="2">List</option>
+          <option value="3">Grid and List View</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <label style="margin-top: 4px;margin-left: 15px;"> Display Mode: </label>
+    </div>
+    <div class="col-sm-3">
+      <div class="c8y-select-wrapper">
+        <select class="form-control" [(ngModel)]="widgetHelper.getWidgetConfig().displayMode">
+          <option value="All">All</option>
+          <option value="Devices">Only Devices</option>
+          <option value="Assets">Only Assets</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <label *ngIf="widgetHelper.getWidgetConfig().defaultListView === '2' || widgetHelper.getWidgetConfig().defaultListView === '3'"> List View Settings: </label>
+
+  <div class="form-group" *ngIf="widgetHelper.getWidgetConfig().defaultListView === '2' || widgetHelper.getWidgetConfig().defaultListView === '3'">
+    <label>Table Inputs: </label>
+    <ng-container>
+      <ng-select [items]="propertiesToDisplayList" [multiple]="true" bindLabel="label" bindValue="id"
+        [closeOnSelect]="false" [(ngModel)]="widgetHelper.getWidgetConfig().selectedInputs" (ngModelChange)="onColChange()"
+        placeHolder='select Table Fields'>
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" /> {{item.label}}
+        </ng-template>
+      </ng-select>
+      <div *ngIf="otherPropList" class="mt-10">
+        <b>Since you selected Other, property name and value must be entered </b>
+        <a class="btn btn-default btn-xs" (click)="addProperty()" style="margin-left:20px;">
+          <i c8y-icon="plus" class="dlt-c8y-icon-plus"></i>
+          Add property
+        </a>
+        <br />
+      </div>
+      <ng-container *ngIf="otherPropList">
+        <div *ngFor="let property of widgetHelper.getWidgetConfig().otherPropList; let i = index" class="mt-10">
+          <label>Label </label>
+          <input type="text" class="form-control input-width" placeholder="eg. Position" [(ngModel)]="property.label"
+            required>
+          <label>Value </label>
+          <input type="text" class="form-control input-width" placeholder="eg. c8y_Position"
+            [(ngModel)]="property.value" required>
+          <a class="btn btn-default btn-xs mt-10" (click)="removeProperty(i)">
+            <i c8y-icon="minus" class="dlt-c8y-icon-minus"></i>
+            Remove
+          </a>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
   <div class="configSection">
     <h4 translate>Select one or more Devices of the same type</h4>
     <div class="row form-group">
@@ -40,7 +104,7 @@
           " alt="Device Image" title="Displayed on widget. (click to change)"
           onClick="document.getElementById('file-chooser').click()" />
       </div>
-      <div class="col-lg-2 col-layout">
+      <!-- <div class="col-lg-2 col-layout">
         <div class="input-group mb-1">
           <div class="input-group-prepend">
             Icon Height
@@ -53,7 +117,7 @@
               {{ widgetHelper.getWidgetConfig().imageWidth() }}</output>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- this.widgetHelper.getWidgetConfig().overrideDashboardDevice -->
     <div class="row form-group" *ngIf="this.widgetHelper.getDeviceTarget()">

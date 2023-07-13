@@ -47,7 +47,16 @@ export class WidgetConfig {
     showFilters: boolean = false;
     overrideDashboardDevice: boolean = false;
     deviceFilter: string = '';
-
+    defaultListView: string = '';
+    displayMode: string = '';
+    selectedInputs: any;
+    otherPropList: {
+        //
+        // Helper classes and interfaces
+        //
+        label // Helper classes and interfaces
+        : string; value: string;
+    }[];
     /**
      *  Create an instance of the config object
      */
@@ -59,8 +68,8 @@ export class WidgetConfig {
         this.selectedOperations = [];
         this.selectedToggles = [];
         this.deviceSettings = new Map();
-        this.deviceImageHeight = 50;
-        this.deviceImageWidth = 50;
+        this.deviceImageHeight = 125;
+        this.deviceImageWidth = 125;
         this.deviceColumns = 3;
         this.showAvailability = true;
         this.showAlarms = true;
@@ -106,7 +115,7 @@ export class WidgetConfig {
             if (mo.c8y_SupportedOperations.includes(op.operation)) {
                 return true;
             }
-        } 
+        }
 
         return (op.toggle || op.unsupported);
     }

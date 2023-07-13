@@ -160,16 +160,43 @@ export class WidgetHelper<CONFIGTYPE> {
         return mos;
     }
 
-    async getDevices(inventoryService: InventoryService, ids: string[]): Promise<IManagedObject[]> {
-        //console.log("GetDevices");
-        let retrieved: IManagedObject[] = [];
-        for (const id of ids) {
-            let { data, res } = await inventoryService.detail(id);
-            if (res.status === 200) {
-                retrieved.push(data);
-            }
+    async getDevices(inventoryService: InventoryService, ids: string[], deviceType: any): Promise<IManagedObject[]> {
+        let queryString = '';
+        if (deviceType === 'Assets') {
+            queryString = 'has(c8y_IsAsset)'
+        } else if (deviceType === 'Devices') {
+            queryString = 'has(c8y_IsDevice)'
         }
-        //console.log(retrieved);
+        let response = {
+            data: []
+        };
+        const filter: object = {
+            withTotalPages: true,
+            query: (queryString ? queryString : ''),
+        };
+        if (this.config['selectedDevices'].length > 1) {
+            let res: any;
+            for (let i = 0; i < this.config['selectedDevices'].length; i++) {
+                res = (await inventoryService.childAssetsList(this.config['selectedDevices'][i].id, filter));
+                response.data = response.data.concat(Object.assign(res.data));
+                console.log(response.data);
+            }
+        } else {
+            response = (await inventoryService.childAssetsList(this.config['selectedDevices'][0].id, filter));
+        }
+        let retrieved: IManagedObject[] = [];
+        if (response.data && response.data.length > 0) {
+            response.data.forEach((data) => {
+                retrieved.push(data);
+            })
+        }
+        
+        /*for (const id of ids) {
+            let { data, res } = await inventoryService.detail(id, filter);
+            if (res.status === 200) {
+            }
+        }*/
+        console.log(retrieved);
         return retrieved;
     }
 

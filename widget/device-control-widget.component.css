@@ -1,19 +1,47 @@
 /** @format */
 
 .device-control-widget-container {
-    padding-left: 15px;
-    padding-right: 15px;
+    display: flex;
+    width: 100%;
+    padding: 10px 10px 5px;
 }
-
+.gp-device-list .refresh-panel {
+    color: #1776BF;
+}
+.header-item {
+    flex-grow: 1;
+}
+.refresh-panel {
+    float: right;
+}
+.device-list-table {
+    width: 100%;
+    background-color: var(--table-background, var(--component-background, var(--root-component-background, #fff)));
+    table-layout: fixed;
+}
+.device-list-table td.mat-cell,
+.device-list-table td.mat-footer-cell,
+.device-list-table th.mat-header-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 100px;
+    width: 100px;
+    padding-right: 10px;
+    white-space: normal;
+    color: var(--component-color, var(--root-component-color, var(--gray-text, #000)));
+    border-bottom-color: var(--table-border, var(--component-border, var(--root-component-border, rgba(0, 0, 0, 0.1))));
+}
+.btn-group
+{
+    padding-bottom:45px;
+}
 .small-icon {
     width: 5em;
     height: 5em;
 }
-
 img.small-icon.withhover:hover {
     background: gray;
 }
-
 .grid-container {
     display: inline-flex;
     min-width: 100%;
@@ -22,7 +50,6 @@ img.small-icon.withhover:hover {
     text-align-last: justify;
     justify-content: center;
 }
-
 .grid-item {
     display: flex;
     flex-flow: column;
@@ -30,7 +57,6 @@ img.small-icon.withhover:hover {
     text-align: center;
     align-items: center;
 }
-
 .grid-element {
     display: flex;
     width: 100%;
@@ -38,13 +64,12 @@ img.small-icon.withhover:hover {
     padding: 0.5em;
     text-align: center;
     align-items: center;
+    margin-bottom: 5px;
 }
-
 .padinline {
     padding: 0.5em;
     vertical-align: bottom;
 }
-
 .button-row {
     display: flex;
     width: 100%;
@@ -54,6 +79,7 @@ img.small-icon.withhover:hover {
     align-items: center;
     justify-content: center;
 }
+
 /**
  config section
 **/
@@ -79,7 +105,7 @@ img.small-icon.withhover:hover {
     margin-left: 5px;
 }
 
-.help-icon > img {
+.help-icon>img {
     max-width: 20px;
     max-height: 20px;
 }
@@ -123,4 +149,49 @@ img.withhover:hover {
 
 .mdlstyled-input:focus {
     outline: none;
+}
+
+.device-list-switch-toggle {
+    line-height: 1;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.device-card {
+    transform-style: preserve-3d;
+   height: 260px;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    margin: 20px;
+    max-width: 300px;
+    width: 220px;
+    transition: all 1s linear;
+}
+
+.device-card-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.device-heading {
+    font-size: 13px;
+    /*padding-top: 10px;*/
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    justify-content: center;
+    color: var(--card-color, #000);
+}
+
+
+.inputTheme {
+    color: var(--card-color, #000);
+}
+
+.inputTheme:focus {
+    color: #000;
 }

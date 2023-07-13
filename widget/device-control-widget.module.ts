@@ -26,12 +26,16 @@ import { NgModule } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { SafeImage } from "./safeImage.pipe";
+import { MatTableModule } from "@angular/material/table";
+import { DeviceControlService } from "./device-control.service";
 
+import { MatSortModule } from '@angular/material/sort';
 @NgModule({
-    imports: [CoreModule, CommonModule, HttpClientModule, NgSelectModule],
+    imports: [CoreModule, CommonModule, HttpClientModule, NgSelectModule, MatTableModule,MatSortModule,],
     declarations: [DeviceControlWidget, DeviceControlWidgetConfig, SafeImage],
     entryComponents: [DeviceControlWidget, DeviceControlWidgetConfig],
     providers: [
+        DeviceControlService,
         {
             provide: HOOK_COMPONENTS,
             multi: true,

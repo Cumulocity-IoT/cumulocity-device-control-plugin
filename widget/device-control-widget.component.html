@@ -1,103 +1,251 @@
-<div class="device-control-widget-container">
+<div class="gp-device-list device-control-widget-container">
 
-    <div [hidden]="!widgetHelper.getWidgetConfig().showFilters">
-        <div class="d-flex" style="flex-wrap: wrap;">
-            <!-- Filter row-->
-            <div class="m-r-8">
-                <label class="c8y-switch" translate>
-                </label>
-                <input type="checkbox" name="showrisk"
-                       [(ngModel)]="widgetHelper.getWidgetConfig().atRisk"
-                       (change)="updateDeviceStates()">
-                <span></span> only show devices at risk
-            </div>
-            <div class="input-group input-group-search flex-grow" style="width: inherit;">
-                <input
-                       type="search"
-                       class="form-control"
-                       placeholder="filter by name"
-                       #assetfilter />
-                <span class="input-group-addon">
-                    <i c8yIcon="search"
-                       *ngIf="!this.widgetHelper.getWidgetConfig().deviceFilter || this.widgetHelper.getWidgetConfig().deviceFilter.length === 0"></i>
-                    <i
-                       c8yIcon="times"
-                       class="text-muted"
-                       *ngIf="this.widgetHelper.getWidgetConfig().deviceFilter && this.widgetHelper.getWidgetConfig().deviceFilter.length > 0"
-                       (click)="this.widgetHelper.getWidgetConfig().deviceFilter = ''"></i>
-                </span>
-            </div>
-        </div>
+  <div class="header-item" style="display: flex;">
+    <div class="btn-group" role="group" *ngIf="widgetHelper.getWidgetConfig().defaultListView === '3'">
+      <button type="button" class="btn btn-default" (click)="viewMode = '1';" title="Grid View"><i
+          class="dlt-c8y-icon-files header-mode"></i></button>
+      <button type="button" class="btn btn-default" (click)="viewMode = '2';" title="List View"><i
+          class="dlt-c8y-icon-list header-mode"></i></button>
+    </div>
+    <div class="btn-group" role="group" *ngIf="widgetHelper.getWidgetConfig().defaultListView === '1'">
+      <button type="button" class="btn btn-default" (click)="viewMode = '1';" title="Grid View"><i
+          class="dlt-c8y-icon-files header-mode"></i></button>
+    </div>
+    <div class="btn-group" role="group" *ngIf="widgetHelper.getWidgetConfig().defaultListView === '2'">
+      <button type="button" class="btn btn-default" (click)="viewMode = '2';" title="List View"><i
+          class="dlt-c8y-icon-list header-mode"></i></button>
     </div>
 
 
-    <!-- Device list -->
-    <div class="card-group bg-gray-lighter" style="justify-content: center;">
-        <div class="card m-8" style="margin-bottom: 8px;"
-             *ngFor="let mo of widgetHelper.getWidgetConfig().filteredAssets">
+    <div class="btn-group device-list-switch-toggle">
 
-            <!-- HEADER -->
-            <!-- <div class="card-header separator"> -->
-            <div class="card-block">
-
-                <div style="text-align: center;">
-                    <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
-                       href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
-                        <img
-                             [ngStyle]='{height:widgetHelper.getWidgetConfig().imageHeight(),width:widgetHelper.getWidgetConfig().imageWidth()}'
-                             [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage"
-                             alt="Device"
-                             title="{{mo.name}}">
-                    </a>
-                    <ng-template #justimage>
-                        <img [ngStyle]='{height:widgetHelper.getWidgetConfig().imageHeight(),width:widgetHelper.getWidgetConfig().imageWidth()}'
-                             [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage"
-                             alt="Device"
-                             title="{{mo.name}}">
-                    </ng-template>
-                    <span class=" grid-element card-title">
-                        {{mo.name}}
-                    </span>
-                </div>
-                <!-- BODY -->
-                <ng-container *ngIf="widgetHelper.getWidgetConfig().showAvailability">
-                    <!--widgetHelper.getWidgetConfig().operationIcon('heartbeat')-->
-                    <span
-                          [ngClass]="['grid-element badge badge-pill',widgetHelper.getWidgetConfig().deviceStatus(mo)]">
-                        {{widgetHelper.getWidgetConfig().deviceStatusLabel(mo)}}
-                    </span>
-                </ng-container>
-                <ng-container *ngIf="widgetHelper.getWidgetConfig().showAlarms">
-                    <span
-                          [ngClass]="['grid-element grid-element badge badge-pill',widgetHelper.getWidgetConfig().alarmStatus(mo)]">
-                        {{widgetHelper.getWidgetConfig().getAlarmCount(mo)}} alarms
-                    </span>
-                </ng-container>
-                <ng-container *ngIf="widgetHelper.getWidgetConfig().showOperations">
-                    <div class="button-col">
-                        <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedToggles">
-                            <label class="c8y-switch">
-                                <input type="checkbox"
-                                       [checked]="mo[op.source]"
-                                       (change)="performOperation(mo,op)">
-                                <span></span>{{op.name}}
-                            </label>
-                        </div>
-                    </div>
-                    <div class="button-row">
-                        <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedOperations">
-                            <button *ngIf="widgetHelper.getWidgetConfig().validOperation(mo,op)"
-                                    style="color:#1776BF;"
-                                    type="button"
-                                    class="button"
-                                    (click)="performOperation(mo,op)"
-                                    title="{{op.name}}">
-                                    <i [c8yIcon]="widgetHelper.getWidgetConfig().operationIcon(op)" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </ng-container>
-            </div>
-        </div>
+      <label class="c8y-switch danger">
+        <input type="checkbox" checked="checked" [(ngModel)]="widgetHelper.getWidgetConfig().atRisk"
+          (change)="updateDeviceStates()">
+        <span></span> Only Show Devices At Risk
+      </label>
     </div>
+
+  </div>
+  <div class="header-item ">
+    <div id="search" class="input-group input-group-search" style="width:600px;">
+      <input type="search" class="form-control inputTheme" placeholder="filter by name" #assetfilter />
+      <span class="input-group-addon">
+        <i c8yIcon="search"
+          *ngIf="!this.widgetHelper.getWidgetConfig().deviceFilter || this.widgetHelper.getWidgetConfig().deviceFilter.length === 0"></i>
+        <i c8yIcon="times" class="text-muted"
+          *ngIf="this.widgetHelper.getWidgetConfig().deviceFilter && this.widgetHelper.getWidgetConfig().deviceFilter.length > 0"
+          (click)="this.widgetHelper.getWidgetConfig().deviceFilter = ''"></i>
+
+      </span>
+    </div>
+  </div>
+  <div class="header-item">
+    <div class="refresh-panel">
+      <button type="button" class="btn btn-link c8y-realtime btnTheme" title="Toggle realtime" (click)="toggle()">
+        <span [ngClass]="realtimeState ? 'c8y-pulse active' : 'c8y-pulse inactive'"></span>
+        <span>Realtime</span>
+      </button>
+      <button type="button" class="btn btn-link" (click)="reload()"><span class="fa fa-refresh"></span></button>
+    </div>
+
+  </div>
+
 </div>
+
+<div *ngIf="viewMode === '2'">
+  <table mat-table [dataSource]="dataSource" matSort class="device-list-table">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let row">
+        <span class="asset-overview-fake-link" title="{{row.id}}"
+          (click)="navigateURL( row.id, row.type)">{{row.id}}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+      <td mat-cell *matCellDef="let row" title="{{row.name}}"> {{row.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="owner">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Owner </th>
+      <td mat-cell *matCellDef="let row" title="{{row.owner}}"> {{row.owner}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="childDeviceAvailable">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Child Devices </th>
+      <td mat-cell *matCellDef="let row" title="{{row.childDeviceAvailable}}"> {{row.childDeviceAvailable}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Connection.status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Connection</th>
+      <td mat-cell *matCellDef="let row" title="{{row.connectionStatus}}"> {{row.connectionStatus}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Firmware.name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Firmware Name </th>
+      <td mat-cell *matCellDef="let row" title="{{row.firmwareName}}"> {{row.firmwareName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Firmware.version">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Firmware Status </th>
+      <td mat-cell *matCellDef="let row" title="{{row.firmwareStatus}}"> {{row.firmwareStatus}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Firmware.versionIssues">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Firmware Issues </th>
+      <td mat-cell *matCellDef="let row" title="{{row.firmwareVersionIssues}}"> {{row.firmwareVersionIssues}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Firmware.versionIssuesName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Firmware Issues Name </th>
+      <td mat-cell *matCellDef="let row" title="{{row.firmwareVersionIssuesName}}"> {{row.firmwareVersionIssuesName}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_RequiredAvailability.responseInterval">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Required availability </th>
+      <td mat-cell *matCellDef="let row" title="{{row.responseInterval}}"> {{row.responseInterval}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="deviceExternalDetails.externalId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> External ID </th>
+      <td mat-cell *matCellDef="let row" title="{{row.externalId}}"> {{row.externalId}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="deviceExternalDetails.externalType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> External Type </th>
+      <td mat-cell *matCellDef="let row" title="{{row.externalType}} "> {{row.externalType}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastUpdated">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Updated </th>
+      <td mat-cell *matCellDef="let row" title="{{row.lastUpdated | date:'d MMMM yyyy HH:mm'}}"> {{row.lastUpdated |
+        date:'d MMMM yyyy HH:mm'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="creationTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Creation Time </th>
+      <td mat-cell *matCellDef="let row" title="{{row.creationTime | date:'d MMMM yyyy HH:mm'}}"> {{row.creationTime |
+        date:'d MMMM yyyy HH:mm'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Availability.status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Availability </th>
+      <td mat-cell *matCellDef="let row" title="{{row.availability}}"> {{row.availability}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Notes">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Notes </th>
+      <td mat-cell *matCellDef="let row" title="{{row.notes}}"> {{row.notes}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+      <td mat-cell *matCellDef="let row" title="{{row.type}}"> {{row.type}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_CommunicationMode.mode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Communication Mode </th>
+      <td mat-cell *matCellDef="let row" title="{{row.communicationMode}}"> {{row.communicationMode}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_Hardware.model">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Hardware Model </th>
+      <td mat-cell *matCellDef="let row" title="{{row.hardwareModel}}"> {{row.hardwareModel}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="c8y_ActiveAlarmsStatus">
+      <th mat-header-cell *matHeaderCellDef> Alerts </th>
+      <td mat-cell *matCellDef="let row">
+        <span *ngIf="isAlerts(row.alertDetails)" [ngClass]="isAlertsColor(row.alertDetails)"
+          title="{{loadText(row.alertDetails)}}">
+          <span class="badge " [ngClass]="isAlertsBGColor(row.alertDetails)">
+            {{getTotalAlerts(row.alertDetails)}}</span>
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="other">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{otherProp.label}} </th>
+      <td mat-cell *matCellDef="let row" title="{{ row.other }}"> {{ row.other }} </td>
+    </ng-container>
+
+    <!-- Dynamic columns -->
+    <ng-container *ngFor="let dynamicColumn of dynamicDisplayColumns" [matColumnDef]="dynamicColumn.value">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{dynamicColumn.label}}
+      </th>
+      <td mat-cell *matCellDef="let row" style="word-wrap: break-word;">
+        <span title="{{row[dynamicColumn.value]}}">{{row[dynamicColumn.value]}}</span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsForList"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsForList;">
+    </tr>
+  </table>
+</div>
+
+<!-- Device list -->
+<div *ngIf="widgetHelper.getWidgetConfig().filteredAssets.length > 0; else noRecordFound">
+  <div class="card-group bg-gray-lighter device-card-group" *ngIf="viewMode !== '2';">
+    <div class="card device-card" style="margin-bottom: 8px;"
+      *ngFor="let mo of widgetHelper.getWidgetConfig().filteredAssets">
+      <!-- HEADER -->
+      <!-- <div class="card-header separator"> -->
+      <div class="card-block">
+
+        <div style="text-align: center;">
+          <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
+            href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
+            <img style="height:125px;width:125px;"
+              [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
+          </a>
+          <ng-template #justimage>
+            <img style="height:125px;width:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
+          </ng-template>
+          <span class="device-heading card-title" style="display:inherit">
+            {{mo.name}}
+          </span>
+        </div>
+        <!-- BODY -->
+        <ng-container *ngIf="widgetHelper.getWidgetConfig().showAvailability">
+          <!--widgetHelper.getWidgetConfig().operationIcon('heartbeat')-->
+          <span [ngClass]="['grid-element badge badge-pill',widgetHelper.getWidgetConfig().deviceStatus(mo)]">
+            {{widgetHelper.getWidgetConfig().deviceStatusLabel(mo)}}
+          </span>
+        </ng-container>
+        <ng-container *ngIf="widgetHelper.getWidgetConfig().showAlarms">
+          <span
+            [ngClass]="['grid-element grid-element badge badge-pill',widgetHelper.getWidgetConfig().alarmStatus(mo)]">
+            {{widgetHelper.getWidgetConfig().getAlarmCount(mo)}} alarms
+          </span>
+        </ng-container>
+        <ng-container *ngIf="widgetHelper.getWidgetConfig().showOperations">
+          <div class="button-col">
+            <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedToggles">
+              <label class="c8y-switch">
+                <input type="checkbox" [checked]="mo[op.source]" (change)="performOperation(mo,op)">
+                <span></span>{{op.name}}
+              </label>
+            </div>
+          </div>
+          <div class="button-row">
+            <div *ngFor="let op of widgetHelper.getWidgetConfig().selectedOperations" style="margin-right:5px;">
+              <button *ngIf="widgetHelper.getWidgetConfig().validOperation(mo,op)" style="color:#1776BF;" type="button"
+                class="button" (click)="performOperation(mo,op)" title="{{op.name}}">
+                <i [c8yIcon]="widgetHelper.getWidgetConfig().operationIcon(op)" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #noRecordFound>
+  <div *ngIf="widgetHelper.getWidgetConfig().filteredAssets.length <= 0" class="text-bold text-center text-16">No
+    Asset(s) Found</div>
+</ng-template>
