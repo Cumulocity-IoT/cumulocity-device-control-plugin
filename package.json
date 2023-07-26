@@ -1,10 +1,10 @@
 {
   "name": "cumulocity-device-control-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This Device Control widget allows to display and control devices and groups of devices.",
   "scripts": {
-    "start": "c8ycli server -u https://appbuilder.eu-latest.cumulocity.com",
-    "build": "c8ycli build --env.mode=development",
+    "start": "c8ycli server",
+    "build": "c8ycli build --env.mode=production",
     "deploy": "c8ycli deploy",
     "postinstall": "ngcc",
     "prebuild": " gulp clean",

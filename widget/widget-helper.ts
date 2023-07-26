@@ -179,7 +179,7 @@ export class WidgetHelper<CONFIGTYPE> {
             for (let i = 0; i < this.config['selectedDevices'].length; i++) {
                 res = (await inventoryService.childAssetsList(this.config['selectedDevices'][i].id, filter));
                 response.data = response.data.concat(Object.assign(res.data));
-                console.log(response.data);
+                //console.log(response.data);
             }
         } else {
             response = (await inventoryService.childAssetsList(this.config['selectedDevices'][0].id, filter));
@@ -190,18 +190,12 @@ export class WidgetHelper<CONFIGTYPE> {
                 retrieved.push(data);
             })
         }
-        
-        /*for (const id of ids) {
-            let { data, res } = await inventoryService.detail(id, filter);
-            if (res.status === 200) {
-            }
-        }*/
-        console.log(retrieved);
+       
         return retrieved;
     }
 
     async getDevicesForGroup(inventoryService: InventoryService, mo: IManagedObject): Promise<IManagedObject[]> {
-        //console.log("GetDevicesForGroup");
+       
         let mos: IManagedObject[] = [];
         for (let g = 0; g < mo.childAssets.references.length; g++) {
             const device = mo.childAssets.references[g];

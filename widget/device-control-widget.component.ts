@@ -163,7 +163,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         await this.updateDeviceStates(true); //all devices
         this.timerObs = interval(60000);
         this.appId = this.getAppId();
-        console.log("appID", this.appId)
+       // console.log("appID", this.appId)
     }
     async performOperation(mo: IManagedObject, op: DeviceOperation): Promise<void> {
         //let ops: IResult<IOperation> = await this.operations.detail('37661367');
@@ -217,14 +217,14 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                 };
                 operation[op.operation] = payload;
                 //console.log("operation", operation);
-                console.log("operation", operation);
+               // console.log("operation", operation);
 
                 //get list of all simulators
                 this.appdata = await this.deviceControlService.getAppSimulator(this.appId);
                 if (this.appdata && this.appdata.applicationBuilder && this.appdata.applicationBuilder.simulators) {
-                    console.log("appdata", this.appdata);
+                    //console.log("appdata", this.appdata);
                     this.appsimdata = this.appdata.applicationBuilder.simulators;
-                    console.log("appsimdata", this.appsimdata);
+                   // console.log("appsimdata", this.appsimdata);
 
                 }
                 if (operation && operation.id === "Start") {
@@ -240,7 +240,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                    console.log("updated appdata", this.appdata);
+                   // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -259,7 +259,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                    console.log("updated appdata", this.appdata);
+                   // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -290,7 +290,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                    console.log("updated appdata", this.appdata);
+                   // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -309,7 +309,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                    console.log("updated appdata", this.appdata);
+                  //  console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -499,7 +499,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
 
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().filteredAssets.sort((a, b) => a.name.localeCompare(b.name));
         this.dataSource.data = this.widgetHelper.getWidgetConfig().filteredAssets;
-        console.log(this.dataSource.data);
+      //  console.log(this.dataSource.data);
     }
     private clearSubscriptions() {
         if (this.allSubscriptions) {
