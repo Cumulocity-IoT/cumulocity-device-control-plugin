@@ -250,12 +250,15 @@ img.withhover:hover {
     color: var(--brand-dark);
 }
 
-.btn-default {
-    border-color: var(--brand-dark);
-}
+
 
 .header-mode {
     color: var(--brand-dark);
+}
+.bg-gray-lighter 
+{
+    background-color: var(--header-color)!important;
+
 }
 
 
