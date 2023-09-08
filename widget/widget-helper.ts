@@ -160,42 +160,53 @@ export class WidgetHelper<CONFIGTYPE> {
         return mos;
     }
 
-    async getDevices(inventoryService: InventoryService, ids: string[], deviceType: any): Promise<IManagedObject[]> {
-        let queryString = '';
+    async getDevices(inventoryService: InventoryService, ids: string[], pageSize: any, currentPage: any) {
+        /*let queryString = '';
         if (deviceType === 'Assets') {
             queryString = 'has(c8y_IsAsset)'
         } else if (deviceType === 'Devices') {
             queryString = 'has(c8y_IsDevice)'
-        }
-        let response = {
-            data: []
+        }*/
+        let response: any = {
+            data: [],
+            paging: []
         };
         const filter: object = {
+            pageSize,
             withTotalPages: true,
-            query: (queryString ? queryString : ''),
+            currentPage
+            //query: (queryString ? queryString : ''),
         };
+
         if (this.config['selectedDevices'].length > 1) {
-            let res: any;
+            let resp: any;
             for (let i = 0; i < this.config['selectedDevices'].length; i++) {
-                res = (await inventoryService.childAssetsList(this.config['selectedDevices'][i].id, filter));
-                response.data = response.data.concat(Object.assign(res.data));
+                let { data } = await inventoryService.detail(this.config['selectedDevices'][i].id);
+                response.data = response.data.concat(Object.assign(data));
+                resp = (await inventoryService.childAssetsList(this.config['selectedDevices'][i].id, filter));
+                response.data = response.data.concat(Object.assign(resp.data));
+                response.paging = response.paging.concat(Object.assign(resp.paging));
                 //console.log(response.data);
             }
         } else {
-            response = (await inventoryService.childAssetsList(this.config['selectedDevices'][0].id, filter));
+            let { data } = await inventoryService.detail(this.config['selectedDevices'][0].id);
+            response.data = response.data.concat(Object.assign(data));
+            let resp: any = (await inventoryService.childAssetsList(this.config['selectedDevices'][0].id, filter));
+            response.data = response.data.concat(Object.assign(resp.data));
+            response.paging = response.paging.concat(Object.assign(resp.paging));
         }
-        let retrieved: IManagedObject[] = [];
+        /*let retrieved: IManagedObject[] = [];
         if (response.data && response.data.length > 0) {
             response.data.forEach((data) => {
                 retrieved.push(data);
             })
-        }
-       
-        return retrieved;
+        }*/
+
+        return response;
     }
 
     async getDevicesForGroup(inventoryService: InventoryService, mo: IManagedObject): Promise<IManagedObject[]> {
-       
+
         let mos: IManagedObject[] = [];
         for (let g = 0; g < mo.childAssets.references.length; g++) {
             const device = mo.childAssets.references[g];

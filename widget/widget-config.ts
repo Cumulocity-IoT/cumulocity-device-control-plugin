@@ -48,7 +48,7 @@ export class WidgetConfig {
     overrideDashboardDevice: boolean = false;
     deviceFilter: string = '';
     defaultListView: string = '';
-    displayMode: string = '';
+    //displayMode: string = '';
     selectedInputs: any;
     otherPropList: {
         //
@@ -207,9 +207,9 @@ export class WidgetConfig {
     getAlarmCount(device) {
         let countAlarms = 0;
 
-        if (_.has(device, 'c8y_ActiveAlarmsStatus')) {
+        if (_.has(device, 'c8y_ActiveAlarmsStatus') || _.has(device, 'alertDetails')) {
 
-            const alarmStatus = _.get(device, 'c8y_ActiveAlarmsStatus');
+            const alarmStatus = _.get(device, 'c8y_ActiveAlarmsStatus') || _.get(device, 'alertDetails');
             _.forEach(_.values(alarmStatus), alarmCount => {
                 countAlarms += alarmCount;
             });

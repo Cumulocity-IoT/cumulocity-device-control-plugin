@@ -11,9 +11,9 @@ This widget allows display and control of devices and groups of devices.
 
 ### Please choose Device Control release based on Cumulocity/Application builder version:
 
-|APPLICATION BUILDER | CUMULOCITY | DEVICE CONTROL WIDGET |
-|--------------------|------------|-----------------------|
-| 2.x.x              | >= 1016.x.x| 1.x.x                 | 
+|APPLICATION BUILDER &nbsp;| &nbsp; CUMULOCITY&nbsp;  | &nbsp; DEVICE CONTROL WIDGET &nbsp; |
+|--------------------|-------------|-----------------------|
+| 2.x.x              |  >= 1016.x.x| 1.x.x                 | 
 
 
 ![Image](images/device.png)

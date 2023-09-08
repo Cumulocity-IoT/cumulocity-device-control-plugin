@@ -8,7 +8,7 @@ import { DeviceControlWidgetModule } from './widget/device-control-widget.module
 import './locales/de.po'; // <- adding additional strings to the german translation.
 import { HttpClientModule } from '@angular/common/http';
 import { DeviceControlService } from './widget/device-control.service';
-
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -16,6 +16,7 @@ import { DeviceControlService } from './widget/device-control.service';
     ngRouterModule.forRoot([], { enableTracing: false, useHash: true }),
     RouterModule.forRoot(),
     CoreModule.forRoot(),
+    NgSelectModule,
     DeviceControlWidgetModule,HttpClientModule
   ],
   providers: [BsModalRef,DeviceControlService],

@@ -1,11 +1,11 @@
 <div>
   <div class="row col-sm-12">
-    <div class="col-sm-2">
-      <label style="margin-top: 4px;margin-left: -15px;"> Display as: </label>
+    <div class="col-sm-3">
+      <label style="margin-top: 4px;margin-left: -7px;"> Display as: </label>
     </div>
-    <div class="col-sm-3" style="margin-left:-50px;">
+    <div class="col-sm-4" style="margin-left:-50px;">
       <div class="c8y-select-wrapper">
-        <select class="form-control" [(ngModel)]="widgetHelper.getWidgetConfig().defaultListView"
+        <select class="form-control" [(ngModel)]="widgetHelper.getWidgetConfig().defaultListView "
           (change)="displayList($event.target.value)">
           <option value="1">Grid</option>
           <option value="2">List</option>
@@ -13,7 +13,7 @@
         </select>
       </div>
     </div>
-    <div class="col-sm-2">
+    <!-- <div class="col-sm-2">
       <label style="margin-top: 4px;margin-left: 15px;"> Display Mode: </label>
     </div>
     <div class="col-sm-3">
@@ -24,7 +24,7 @@
           <option value="Assets">Only Assets</option>
         </select>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <label *ngIf="widgetHelper.getWidgetConfig().defaultListView === '2' || widgetHelper.getWidgetConfig().defaultListView === '3'"> List View Settings: </label>
@@ -68,18 +68,20 @@
     <div class="row form-group">
       <div class="col-lg-12">
         <label class="label-with-help" for="deviceSelector" class="label-with-help" translate>Select device
-          <span class="help-icon">
+                  <span class="help-icon">
             <img src="{{ CONST_HELP_IMAGE_FILE }}" alt="help tooltip"
               title="Select one or more devices for the control widget." />
           </span>
         </label>
-        <ng-select [items]="rawDevices | async" [multiple]="true" bindLabel="name" [closeOnSelect]="false"
+        <ng-select class="selectDropdown" [items]="rawDevices | async" [multiple]="true" bindLabel="name" [closeOnSelect]="false"
           [(ngModel)]="widgetHelper.getWidgetConfig().selectedDevices" (ngModelChange)="onConfigChanged()">
+          
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
             <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" />
             {{ item.name }}
           </ng-template>
         </ng-select>
+        
       </div>
     </div>
 
@@ -257,7 +259,7 @@
           <label> Managed Object node </label>
           <input class="form-control" type="text" [ngModelOptions]="{ standalone: true }" [(ngModel)]="op.source"
             [value]="op.source" (change)="onConfigChanged()" />
-          <button style="color: #1776bf" type="button" class="button" (click)="removeToggle(i)">
+          <button style="color: #1776bf;margin-top:5px" type="button" class="button" (click)="removeToggle(i)">
             <i c8yIcon="minus"></i>
             Delete
           </button>
@@ -330,7 +332,7 @@
     </div>
   </div>
 
-  <h4 style="align-content: center; width: 100%">Preview</h4>
+  <h4 style="margin-left: 260px; width: 100%">Preview</h4>
   <div class="card-group bg-gray-lighter flex-wrap flex-grow j-c-evenly">
     <!-- Device list -->
     <div class="col card m-8" style="margin-bottom: 8px"

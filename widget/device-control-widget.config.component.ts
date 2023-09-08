@@ -86,17 +86,17 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     }
     getDeviceProperties(id: any) {
         // tslint:disable-next-line:variable-name
-        let queryString: any;
+        /*let queryString: any;
         if (this.widgetHelper.getWidgetConfig().displayMode === 'Devices') {
             queryString = 'has(c8y_IsDevice)'
         } else if (this.widgetHelper.getWidgetConfig().displayMode === 'Assets') {
             queryString = 'has(c8y_IsAsset)'
-        }
+        }*/
         const _this = this;
         const filter: object = {
             pageSize: 100,
             withTotalPages: true,
-            query: (queryString ? queryString : ''),
+          //  query: (queryString ? queryString : ''),
         };
         console.log(filter, "")
         this.invSvc.childAssetsList(id, filter).then(res => {
@@ -110,6 +110,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
             });
         });
     }
+    
     getObjectsAllProperties(object: object, propertyTypes: Property[]): any {
         // tslint:disable-next-line:variable-name
         const _this = this;
@@ -152,9 +153,9 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
             this.widgetHelper.getWidgetConfig().defaultListView = '3';
         }
 
-        if (!this.widgetHelper.getWidgetConfig().displayMode) {
+       /* if (!this.widgetHelper.getWidgetConfig().displayMode) {
             this.widgetHelper.getWidgetConfig().displayMode = 'All';
-        }
+        }*/
 
         this.propertiesToDisplayList = [
             { id: 'id', label: 'ID', value: 'id' },
@@ -264,7 +265,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     }
 
     onConfigChanged(): void {
-        //console.log("CONFIG-CHANGED");
+        //console.log("CONFIG-CHANGED"); 
         this.populateOperations();
         this.widgetHelper.setWidgetConfig(this.config); //propgate changes 
         //console.log(this.widgetHelper.getWidgetConfig());

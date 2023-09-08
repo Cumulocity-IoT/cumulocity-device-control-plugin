@@ -26,12 +26,13 @@ import { WidgetConfig, DeviceOperation } from "./widget-config";
 import * as _ from 'lodash';
 import { Observable, Subscription, interval, Subject, fromEvent, BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
-import { AlertService } from '@c8y/ngx-components';
+import { AlertService, Route } from '@c8y/ngx-components';
 import { Realtime } from '@c8y/ngx-components/api';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DeviceControlService } from './device-control.service';
+import { Router } from '@angular/router';
 export interface DeviceData {
     id?: string;
     name?: string;
@@ -54,8 +55,6 @@ export interface DeviceData {
     owner?: string;
     childDeviceAvailable?: any;
     notes?: any;
-    realtimeState: true;
-
 }
 @Component({
     selector: "lib-device-control-widget",
@@ -66,21 +65,25 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
 
     widgetHelper: WidgetHelper<WidgetConfig>;
     @Input() config;
-    @ViewChild('assetfilter', { static: true }) filterInput: ElementRef;
+    //@ViewChild('assetfilter', { static: true }) filterInput: ElementRef;
     private timerObs: Observable<number>;
     private subs: Subscription[] = [];
     public input$ = new Subject<string | null>();
     public moSubs$ = new BehaviorSubject<any | null>(null);
-   // displayedColumnsForList: string[] = ['id', 'name', 'owner', 'lastUpdated', 'creationTime', 'c8y_Availability.status', 'c8y_Notes', 'c8y_ActiveAlarmsStatus'];
+    // displayedColumnsForList: string[] = ['id', 'name', 'owner', 'lastUpdated', 'creationTime', 'c8y_Availability.status', 'c8y_Notes', 'c8y_ActiveAlarmsStatus'];
     displayedColumnsForList: string[] = [];
     then: any;
     dataSource = new MatTableDataSource<any>([]);
+    matData = [];
     realtimeState: any;
     allSubscriptions: any = [];
     filterAssets: any;
     deviceListService: any;
-    filterData: any;
-    deviceListData: any;
+    filterData = [];
+    deviceListData = [];
+    configDashboardList: [];
+    isBusy = false;
+
     @ViewChild(MatSort, { static: false })
     set sort(v: MatSort) { this.dataSource.sort = v; }
     @ViewChild(MatTable, { static: false }) matTable: MatTable<any>;
@@ -89,18 +92,26 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     dynamicDisplayColumns = [];
     appId!: string;
     appsimdata!: any;
-    displayMode: any;
+    //displayMode: any;
     appdata!: any;
+    type?: any;
+    latestFirmwareVersion = 0;
+
+    currentPage = 1;
+    pageSize = 5;
+    totalRecord = -1;
     constructor(private appService: ApplicationService,
         private operations: OperationService,
         private inventoryService: InventoryService, private alertService: AlertService,
         private inventoryBinaryService: InventoryBinaryService,
         private deviceControlService: DeviceControlService,
+        private router: Router,
         private realTimeService: Realtime, private sanitizer: DomSanitizer) {
     }
     async ngOnInit(): Promise<void> {
+        this.isBusy = true;
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
-        this.displayMode = this.widgetHelper.getWidgetConfig().displayMode ? this.widgetHelper.getWidgetConfig().displayMode : 'All';
+        //this.displayMode = this.widgetHelper.getWidgetConfig().displayMode ? this.widgetHelper.getWidgetConfig().displayMode : 'All';
         this.displayedColumnsForList = this.widgetHelper.getWidgetConfig().selectedInputs ? this.widgetHelper.getWidgetConfig().selectedInputs : ['id', 'name', 'owner', 'lastUpdated', 'creationTime', 'c8y_Availability.status', 'c8y_Notes', 'c8y_ActiveAlarmsStatus'];
         await this.updateDeviceStates(true); //all devices
         this.appId = this.getAppId();
@@ -112,8 +123,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             this.widgetHelper.getWidgetConfig().defaultListView = '3';
         }
 
-
-        this.subs.push(fromEvent(this.filterInput.nativeElement, 'keyup')
+        /*this.subs.push(fromEvent(this.filterInput.nativeElement, 'keyup')
             .pipe(
                 debounceTime(200),
                 map((e: any) => e.target.value),
@@ -125,45 +135,345 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                 })
             )
             .subscribe()
-        );
-
+        );*/
         this.subs.push(this.moSubs$.subscribe(data => {
             if (data) {
                 this.updateDevice(data);
             }
         }));
         if (this.widgetHelper.getWidgetConfig().otherPropList && this.widgetHelper.getWidgetConfig().otherPropList.length > 0) {
-             this.widgetHelper.getWidgetConfig().otherPropList.forEach((element) => {
-                 if (element.label !== '' && element.value !== '') {
-                     this.dynamicDisplayColumns.push(element);
-                     this.displayedColumnsForList = this.displayedColumnsForList.concat([element.value]);
-                 }
-             })
-         }
+            this.widgetHelper.getWidgetConfig().otherPropList.forEach((element) => {
+                if (element.label !== '' && element.value !== '') {
+                    this.dynamicDisplayColumns.push(element);
+                    this.displayedColumnsForList = this.displayedColumnsForList.concat([element.value]);
+                }
+            })
+        }
+        this.configDashboardList = [];
         return;
     }
 
-    getFirmwareRiskForFilter(version: any): any {
-        throw new Error('Method not implemented.');
+    async loadMatData(x: any) {
+        let alertDesc = {
+            minor: 0,
+            major: 0,
+            critical: 0,
+            warning: 0
+        };
+
+        const promArr = new Array();
+        let availability = x.c8y_Availability ? x.c8y_Availability.status : undefined;
+        //let connectionStatus = x.c8y_Connection ? x.c8y_Connection.status : undefined;
+
+        alertDesc = (x.hasOwnProperty('c8y_IsAsset')) ? await this.deviceListService.getAlarmsForAsset(x) : this.checkAlarm(x, alertDesc);
+        this.getAlarmAndAvailabilty(x, promArr).then((res) => {
+            const deviceData: DeviceData = {};
+            res.forEach(data => {
+                const inventory = data.data;
+                // tslint:disable-next-line:no-unused-expression
+                alertDesc ? alertDesc = this.checkAlarm(inventory, alertDesc) : '';
+                // tslint:disable-next-line:no-unused-expression
+                availability ? availability = this.checkAvailabilty(inventory, availability) : '';
+            });
+
+            deviceData.id = x.id;
+            deviceData.name = x.name;
+            deviceData.type = x.type;
+            deviceData.lastUpdated = x.lastUpdated;
+            deviceData.creationTime = x.creationTime;
+            deviceData.owner = x.owner ? x.owner : 'Not available';
+            if (x.childDeviceAvailable) {
+                deviceData.childDeviceAvailable = x.childDeviceAvailable;
+            }
+            if (x.deviceExternalDetails) {
+                deviceData.externalId = x.deviceExternalDetails.externalId ? x.deviceExternalDetails.externalId : 'Not available';
+            } else {
+                deviceData.externalId = 'Not available';
+            }
+            if (x.deviceExternalDetails) {
+                deviceData.externalType = x.deviceExternalDetails.externalType ? x.deviceExternalDetails.externalType : 'Not available';
+            } else {
+                deviceData.externalType = 'Not available';
+            }
+            if (x.c8y_RequiredAvailability) {
+                deviceData.responseInterval = x.c8y_RequiredAvailability.responseInterval ? x.c8y_RequiredAvailability.responseInterval : 'Not available';
+            } else {
+                deviceData.responseInterval = 'Not available';
+            }
+            if (x.c8y_Connection) {
+                deviceData.connectionStatus = x.c8y_Connection.status ? x.c8y_Connection.status : 'Not available';
+            } else {
+                deviceData.connectionStatus = 'Not available';
+            }
+            if (x.c8y_CommunicationMode) {
+                deviceData.communicationMode = x.c8y_CommunicationMode.mode ? x.c8y_CommunicationMode.mode : 'Not availble';
+            } else {
+                deviceData.communicationMode = 'Not available';
+            }
+            if (x.c8y_Hardware) {
+                deviceData.hardwareModel = x.c8y_Hardware.model ? x.c8y_Hardware.model : 'Not available';
+            } else {
+                deviceData.hardwareModel = 'Not available';
+            }
+            if (x.c8y_Notes) {
+                deviceData.notes = x.c8y_Notes;
+            } else {
+                deviceData.notes = 'Not available';
+            }
+            if (this.widgetHelper.getWidgetConfig().selectedInputs) {
+                this.widgetHelper.getWidgetConfig().selectedInputs.forEach(element => {
+                    if (x.c8y_Firmware && element === 'c8y_Firmware.version') {
+                        deviceData.firmwareStatus = x.c8y_Firmware.version ? this.getFirmwareRiskForFilter(x.c8y_Firmware.version) : 'Not available';
+                    } else {
+                        deviceData.firmwareStatus = 'Not available';
+                    }
+                    if (x.c8y_Firmware && element === 'c8y_Firmware.name') {
+                        deviceData.firmwareName = x.c8y_Firmware.name ? x.c8y_Firmware.name : 'Not available';
+                    } else {
+                        deviceData.firmwareName = 'Not available';
+                    }
+                    if (x.c8y_Firmware && element === 'c8y_Firmware.versionIssues') {
+                        deviceData.firmwareVersionIssues = x.c8y_Firmware.versionIssues ? x.c8y_Firmware.versionIssues : 'Not available';
+                    } else {
+                        deviceData.firmwareVersionIssues = 'Not available';
+                    }
+                    if (x.c8y_Firmware && element === 'c8y_Firmware.versionIssuesName') {
+                        deviceData.firmwareVersionIssuesName = x.c8y_Firmware.versionIssuesName ? x.c8y_Firmware.versionIssuesName : 'Not available';
+                    } else {
+                        deviceData.firmwareVersionIssuesName = 'Not available';
+                    }
+                    if (x.c8y_Availability && element === 'c8y_Availability.status') {
+                        deviceData.availability = availability;
+                    }
+                    if (element === 'ActiveAlarmsStatus') {
+                        deviceData.alertDetails = alertDesc;
+                    }
+                    if (element === 'c8y_ActiveAlarmsStatus') {
+                        deviceData.alertDetails = alertDesc;
+                    }
+                });
+            } else {
+                if (x.c8y_Availability) {
+                    deviceData.availability = availability;
+                }
+                if (alertDesc) {
+                    deviceData.alertDetails = alertDesc;
+                }
+            }
+            this.dynamicDisplayColumns.forEach(element => {
+                deviceData[element.value] = this.getTheValue(x, element.value);
+                deviceData[element.value] = JSON.stringify(this.getTheValue(x, element.value));
+            });
+            if (deviceData.type !== 'c8y_DeviceGroup') {
+                this.matData.push(deviceData);
+            }
+            this.matTableLoadAndFilter();
+        });
     }
-    checkAvailabilty(inventory: any, availability: any): any {
-        throw new Error('Method not implemented.');
+    checkAlarm(inventory: IManagedObject, alertDesc: any): any {
+        if (inventory.c8y_ActiveAlarmsStatus) {
+            if (inventory.c8y_ActiveAlarmsStatus.hasOwnProperty('minor')) {
+                if (inventory.c8y_ActiveAlarmsStatus.minor > 0) {
+                    alertDesc.minor += inventory.c8y_ActiveAlarmsStatus.minor;
+                }
+            }
+            if (inventory.c8y_ActiveAlarmsStatus.hasOwnProperty('major')) {
+                if (inventory.c8y_ActiveAlarmsStatus.major > 0) {
+                    alertDesc.major += inventory.c8y_ActiveAlarmsStatus.major;
+                }
+            }
+            if (inventory.c8y_ActiveAlarmsStatus.hasOwnProperty('critical')) {
+                if (inventory.c8y_ActiveAlarmsStatus.critical > 0) {
+                    alertDesc.critical += inventory.c8y_ActiveAlarmsStatus.critical;
+                }
+            }
+            if (inventory.c8y_ActiveAlarmsStatus.hasOwnProperty('warning')) {
+                if (inventory.c8y_ActiveAlarmsStatus.warning > 0) {
+                    alertDesc.warning += inventory.c8y_ActiveAlarmsStatus.warning;
+                }
+            }
+        }
+        return alertDesc;
     }
-    getAlarmAndAvailabilty(x: any, promArr: any[]) {
-        throw new Error('Method not implemented.');
+
+    matTableLoadAndFilter() {
+        this.dataSource.data = this.matData;
+        this.dataSource.sort = this.sort;
+        this.dataSource.filterPredicate = ((x: any, filterValue: string) => this.matFilterConditions(x, filterValue));
     }
-    checkAlarm(x: any, alertDesc: { minor: number; major: number; critical: number; warning: number; }): { minor: number; major: number; critical: number; warning: number; } {
-        throw new Error('Method not implemented.');
+
+    // Filter conditioan for Material Table
+    matFilterConditions(x: any, filterValue) {
+        return !filterValue || x.id.includes(filterValue) ||
+            x.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+            (x.externalId && x.externalId.toLowerCase().includes(filterValue.toLowerCase())) ||
+            (x.availability && x.availability.toLowerCase().includes(filterValue.toLowerCase())) ||
+            (x.firmwareStatus && x.firmwareStatus.toLowerCase().includes(filterValue.toLowerCase())) ||
+            (x.alertDetails && this.isAlerts(x.alertDetails) && (
+                this.isAlertCritical(x.alertDetails) && 'critical'.includes(filterValue.toLowerCase()) ||
+                this.isAlertMajor(x.alertDetails) && 'major'.includes(filterValue.toLowerCase()) ||
+                this.isAlertMinor(x.alertDetails) && 'minor'.includes(filterValue.toLowerCase()) ||
+                this.isAlertWarning(x.alertDetails) && 'warning'.includes(filterValue.toLowerCase())
+            )
+            );
     }
+    isAlertCritical(alarm) {
+        return (alarm && alarm.critical && alarm.critical > 0);
+    }
+    isAlertMajor(alarm) {
+        return (alarm && alarm.major && alarm.major > 0);
+    }
+    isAlertMinor(alarm) {
+        return (alarm && alarm.minor && alarm.minor > 0);
+    }
+    isAlertWarning(alarm) {
+        return (alarm && alarm.warning && alarm.warning > 0);
+    }
+
+    isAlerts(alarm) {
+        if (alarm === undefined) { return false; }
+
+        return (alarm.critical && alarm.critical > 0) || (alarm.major && alarm.major > 0)
+            || (alarm.minor && alarm.minor > 0)
+            || (alarm.warning && alarm.warning > 0);
+    }
+
+    isAlertsBGColor(alarm) {
+        if (alarm) {
+            if (alarm.critical && alarm.critical > 0) {
+                return 'criticalAlerts';
+            } else if (alarm.major && alarm.major > 0) {
+                return 'majorAlerts';
+            } else if (alarm.minor && alarm.minor > 0) {
+                return 'minorAlerts';
+            } else if (alarm.warning && alarm.warning > 0) {
+                return 'warningAlerts';
+            } else {
+                return '';
+            }
+        }
+        return '';
+    }
+
+    isAlertsColor(alarm) {
+        if (alarm) {
+            if (alarm.critical && alarm.critical > 0) {
+                return 'criticalAlerts2';
+            } else if (alarm.major && alarm.major > 0) {
+                return 'majorAlerts2';
+            } else if (alarm.minor && alarm.minor > 0) {
+                return 'minorAlerts2';
+            } else if (alarm.warning && alarm.warning > 0) {
+                return 'warningAlerts2';
+            } else {
+                return '';
+            }
+        }
+        return '';
+    }
+
+    loadText(alarm) {
+        let alarmsStatus = '';
+        if (alarm) {
+            if (alarm.critical && alarm.critical > 0) {
+                alarmsStatus = alarmsStatus + `Critical: ${alarm.critical} `;
+            }
+            if (alarm.major && alarm.major > 0) {
+                alarmsStatus = alarmsStatus + `Major: ${alarm.major} `;
+            }
+            if (alarm.minor && alarm.minor > 0) {
+                alarmsStatus = alarmsStatus + `Minor: ${alarm.minor} `;
+            }
+            if (alarm.warning && alarm.warning > 0) {
+                alarmsStatus = alarmsStatus + `Warning: ${alarm.warning} `;
+            }
+        }
+        return alarmsStatus;
+    }
+
+    getTotalAlerts(alarm) {
+        let alertCount = 0;
+        if (alarm) {
+            if (alarm.critical && alarm.critical > 0) {
+                alertCount += alarm.critical;
+            }
+            if (alarm.major && alarm.major > 0) {
+                alertCount += alarm.major;
+            }
+            if (alarm.minor && alarm.minor > 0) {
+                alertCount += alarm.minor;
+            }
+            if (alarm.warning && alarm.warning > 0) {
+                alertCount += alarm.warning;
+            }
+        }
+        return alertCount;
+    }
+
+    getTheValue(device, value: string) {
+        if (typeof value === 'string' && value.includes('.')) {
+            const arr = value.split('.');
+            let actualValue = device[arr[0]] ? device[arr[0]] : undefined;
+            if (actualValue !== undefined) {
+                for (let i = 1; i < arr.length; i++) {
+                    actualValue = actualValue[arr[i]];
+                }
+            }
+            return actualValue;
+        }
+        return device[value];
+    }
+
+    getAlarmAndAvailabilty(device?: any, promArr?: any[]): any {
+
+        if (device.childDevices && device.childDevices.references && device.childDevices.references.length > 0) {
+            device.childDevices.references.forEach(async dev => {
+                promArr.push(this.inventoryService.detail(dev.managedObject.id));
+            });
+        }
+        return Promise.all(promArr);
+    }
+
+    checkAvailabilty(inventory, availability): any {
+        if (inventory.c8y_Availability && inventory.c8y_Availability.status) {
+            inventory.c8y_Availability.status === 'UNAVAILABLE'
+                // tslint:disable-next-line:no-unused-expression
+                ? availability = 'UNAVAILABLE' : '';
+        }
+        return availability;
+    }
+
+    getFirmwareRiskForFilter(version) {
+        const versionIssue = this.calculateFirmwareRisk(version);
+        if (versionIssue === -1) {
+            return 'Low  Risk';
+        } else if (versionIssue === -2) {
+            return 'Medium Risk';
+        } else if (versionIssue === -3) {
+            return 'High Risk';
+        } else {
+            return 'No Risk';
+        }
+    }
+
+    calculateFirmwareRisk(version) {
+        let versionIssues = 0;
+        versionIssues = version - this.latestFirmwareVersion;
+        return versionIssues;
+    }
+
     async reload(): Promise<void> {
         this.appId = '';
         this.appsimdata = '';
         this.appdata = '';
+        this.matData = [];
+        this.filterData = [];
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
         await this.updateDeviceStates(true); //all devices
         this.timerObs = interval(60000);
         this.appId = this.getAppId();
-       // console.log("appID", this.appId)
+        this.deviceListData = [];
+        // console.log("appID", this.appId)
     }
     async performOperation(mo: IManagedObject, op: DeviceOperation): Promise<void> {
         //let ops: IResult<IOperation> = await this.operations.detail('37661367');
@@ -217,14 +527,14 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                 };
                 operation[op.operation] = payload;
                 //console.log("operation", operation);
-               // console.log("operation", operation);
+                // console.log("operation", operation);
 
                 //get list of all simulators
                 this.appdata = await this.deviceControlService.getAppSimulator(this.appId);
                 if (this.appdata && this.appdata.applicationBuilder && this.appdata.applicationBuilder.simulators) {
                     //console.log("appdata", this.appdata);
                     this.appsimdata = this.appdata.applicationBuilder.simulators;
-                   // console.log("appsimdata", this.appsimdata);
+                    // console.log("appsimdata", this.appsimdata);
 
                 }
                 if (operation && operation.id === "Start") {
@@ -240,7 +550,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                   // console.log("updated appdata", this.appdata);
+                    // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -259,7 +569,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                   // console.log("updated appdata", this.appdata);
+                    // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -290,7 +600,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                   // console.log("updated appdata", this.appdata);
+                    // console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -309,7 +619,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                         }
                     });
                     this.appdata.applicationBuilder.simulators = [...this.appsimdata];
-                  //  console.log("updated appdata", this.appdata);
+                    //  console.log("updated appdata", this.appdata);
                     await this.appService.update({
                         id: this.appdata.id,
                         applicationBuilder: this.appdata.applicationBuilder
@@ -359,17 +669,26 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     }
 
     async updateDeviceStates(makeCall: boolean = false): Promise<void> {
+        this.isBusy = true;
         //here we just update the objects to refect their current state. 
         let ids: string[] = this.widgetHelper.getWidgetConfig().assets.map(mo => mo.id);
 
         if (makeCall) {
-            console.log(this.displayMode,this.widgetHelper.getWidgetConfig().displayMode)
-            this.widgetHelper.getWidgetConfig().assets = await this.widgetHelper.getDevices(this.inventoryService, ids,this.displayMode);
+            const response: any = await this.widgetHelper.getDevices(this.inventoryService, ids, this.pageSize, this.currentPage);
+            let retrieved = [];
+            if (response.data && response.data.length > 0) {
+                response.data.forEach((data) => {
+                    retrieved.push(data);
+                })
+            }
+            if (response.data && response.data.length < this.pageSize) {
+                this.totalRecord = (this.pageSize * (response.paging.totalPages - 1)) + response.data.length;
+            } else {
+                this.totalRecord = this.pageSize * response.paging.totalPages;
+            }
+            this.widgetHelper.getWidgetConfig().assets = retrieved;
 
         }
-
-        //console.log("UPDATE", this.widgetHelper.getWidgetConfig().assets, this.widgetHelper.getWidgetConfig().atRisk, this.widgetHelper.getWidgetConfig().deviceFilter);
-
 
         //filter at risk
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().assets.filter(mo => {
@@ -381,6 +700,8 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             return this.deviceAtRisk(mo);
         });
 
+
+        console.log(this.widgetHelper.getWidgetConfig().assets);
         //filter names
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().filteredAssets.filter(mo => {
             if (this.widgetHelper.getWidgetConfig().deviceFilter === undefined || this.widgetHelper.getWidgetConfig().deviceFilter === '') {
@@ -394,8 +715,30 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         });
 
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().filteredAssets.sort((a, b) => a.name.localeCompare(b.name));
-        this.dataSource.data = this.widgetHelper.getWidgetConfig().filteredAssets;
+        if (this.widgetHelper.getWidgetConfig().filteredAssets && this.widgetHelper.getWidgetConfig().filteredAssets.length > 0) {
+            await this.asyncForEach(this.widgetHelper.getWidgetConfig().filteredAssets, async (x) => {
+                this.filterData.push(x);
+                this.deviceListData.push(x);
+                this.loadMatData(x);
+                if (this.realtimeState) {
+                    this.handleReatime(x.id);
+                }
+            });
+            this.isBusy = false;
+            if (this.widgetHelper.getWidgetConfig().atRisk) {
+                this.filterProblems();
+            }
+        } else {
+            this.isBusy = false;
+        }
         return;
+    }
+
+    // Polyfill for await in forEach
+    async asyncForEach(array, callback) {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
     }
 
     public downloadBinary(id): any {
@@ -438,6 +781,24 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             r = r || s == "DISCONNECTED";
         }
 
+        // For List View Check
+        if (_.has(mo, "availability")) {
+            let s = mo["availability"];
+            r = true;
+            if (s === "AVAILABLE") {
+                r = false;
+                if (_.has(mo, "sag_IsShutDown") && mo["sag_IsShutDown"] == true) {
+                    r = true;
+                }
+            }
+        }
+
+        //other elements to check - connected?
+        if (_.has(mo, "connectionStatus")) {
+            let s = mo["availability"];
+            r = r || s == "DISCONNECTED";
+        }
+
 
         //alarms are risk if they are active
         r = r || this.widgetHelper.getWidgetConfig().getAlarmCount(mo) > 0;
@@ -453,7 +814,25 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             this.clearSubscriptions();
         }
     }
-
+    //Navigate URL to dashboard if dashboard is exist
+    navigateURL(deviceId: string, deviceType: string) {
+        if (deviceType && this.appId) {
+            const dashboardObj = this.configDashboardList.find((dashboard) => dashboard === deviceType || dashboard === 'All');
+            if (dashboardObj && dashboardObj) {
+                if (dashboardObj) {
+                    this.router.navigate([
+                        `/application/${this.appId}/tabgroup/${deviceId}/dashboard/${dashboardObj}/device/${deviceId}`]);
+                } else if (dashboardObj) {
+                    this.router.navigate([
+                        `/application/${this.appId}/tabgroup/${dashboardObj}/dashboard/${dashboardObj}/device/${deviceId}`]);
+                } else {
+                    this.router.navigate([`/application/${this.appId}/dashboard/${dashboardObj}/device/${deviceId}`]);
+                }
+            }
+        } else if (deviceType) {
+            this.router.navigate([`/device/${deviceId}`]);
+        }
+    }
     handleReatime(id) {
         // REALTIME ------------------------------------------------------------------------
         const manaogedObjectChannel = `/managedobjects/${id}`;
@@ -498,9 +877,60 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         });
 
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().filteredAssets.sort((a, b) => a.name.localeCompare(b.name));
-        this.dataSource.data = this.widgetHelper.getWidgetConfig().filteredAssets;
-      //  console.log(this.dataSource.data);
+        const updatedRecord = this.filterData.find(singleDevice => singleDevice.id === updatedDeviceData.id);
+        const updatedIndex = this.filterData.indexOf(updatedRecord);
+        this.filterData[updatedIndex] = updatedDeviceData;
+        this.matData = [...this.matData.filter(device => device.id !== updatedDeviceData.id)];
+        this.loadMatData(updatedDeviceData);
+        this.dataSource.sort = this.sort;
+        this.applyFilter();
     }
+    applyFilter() {
+        if (this.widgetHelper.getWidgetConfig().deviceFilter) {
+            this.filterData = this.filterData.filter(x => {
+                return x.id.includes(this.widgetHelper.getWidgetConfig().deviceFilter) ||
+                    x.name.toLowerCase().includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase()) ||
+                    (x.deviceExternalDetails && x.deviceExternalDetails.externalId.toLowerCase().includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase())) ||
+                    (x.availability && x.availability.toLowerCase().includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase())) ||
+                    (x.c8y_Firmware && x.c8y_Firmware.version &&
+                        this.getFirmwareRiskForFilter(x.c8y_Firmware.version).toLowerCase().includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase())) ||
+                    (x.alertDetails && this.isAlerts(x.alertDetails) && (
+                        this.isAlertCritical(x.alertDetails) && 'critical'.includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase()) ||
+                        this.isAlertMajor(x.alertDetails) && 'major'.includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase()) ||
+                        this.isAlertMinor(x.alertDetails) && 'minor'.includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase()) ||
+                        this.isAlertWarning(x.alertDetails) && 'warning'.includes(this.widgetHelper.getWidgetConfig().deviceFilter.toLowerCase())
+                    ));
+            });
+        } else {
+            this.filterData = this.deviceListData;
+        }
+        this.dataSource.filter = this.widgetHelper.getWidgetConfig().deviceFilter;
+        if (this.widgetHelper.getWidgetConfig().atRisk) {
+            this.filterProblems();
+        }
+    }
+
+    // Filter between all records or only for "Attention required"
+    filterProblems() {
+        if (this.widgetHelper.getWidgetConfig().atRisk) {
+            this.filterData = this.filterData.filter(x => {
+                return this.deviceAtRisk(x);
+            });
+            this.widgetHelper.getWidgetConfig().deviceFilter = this.widgetHelper.getWidgetConfig().deviceFilter;
+            let listFilterData: any[] = this.matData.filter(x => {
+                return this.deviceAtRisk(x)
+            });
+            this.dataSource.data = listFilterData;
+            if (this.matTable) { this.matTable.renderRows(); }
+        } else {
+            this.dataSource.data = this.matData;
+            if (this.matTable) { this.matTable.renderRows(); }
+            this.applyFilter();
+        }
+
+
+    }
+
     private clearSubscriptions() {
         if (this.allSubscriptions) {
             this.allSubscriptions.forEach((s) => {
@@ -519,6 +949,19 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             }
         }
         return '';
+    }
+
+    /**
+  * This method will called during page navigation
+  */
+    getPageEvent(pageEvent) {
+        this.currentPage = pageEvent.page;
+        this.clearSubscriptions();
+        this.matData = [];
+        this.deviceListData = [];
+        this.filterData = [];
+        this.dataSource.data = this.matData;
+        this.updateDeviceStates();
     }
 
 }
