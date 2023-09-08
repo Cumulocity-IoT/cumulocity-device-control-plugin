@@ -1,5 +1,5 @@
 
-# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.0/sag-ps-pkg-device-control-widget-1.1.0.zip)
+# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.2/sag-ps-pkg-device-control-widget-1.1.2.zip)
 
   
 
@@ -38,7 +38,7 @@ This widget allows display and control of devices and groups of devices.
 
 ### Runtime Widget Deployment?
 
-* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.0/sag-ps-pkg-device-control-widget-1.1.0.zip) and install via Administrations --> Ecosystems --> Applications --> Packages.
+* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.2/sag-ps-pkg-device-control-widget-1.1.2.zip) and install via Administrations --> Ecosystems --> Applications --> Packages.
 
 
 ## QuickStart
