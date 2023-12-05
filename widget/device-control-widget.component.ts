@@ -32,6 +32,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DeviceControlService } from './device-control.service';
+import { Router } from '@angular/router';
 export interface DeviceData {
     id?: string;
     name?: string;
@@ -96,7 +97,8 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         private inventoryService: InventoryService, private alertService: AlertService,
         private inventoryBinaryService: InventoryBinaryService,
         private deviceControlService: DeviceControlService,
-        private realTimeService: Realtime, private sanitizer: DomSanitizer) {
+        private realTimeService: Realtime, private sanitizer: DomSanitizer,
+        private router:Router) {
     }
     async ngOnInit(): Promise<void> {
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
@@ -137,9 +139,9 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                  if (element.label !== '' && element.value !== '') {
                      this.dynamicDisplayColumns.push(element);
                      this.displayedColumnsForList = this.displayedColumnsForList.concat([element.value]);
-                 }
-             })
-         }
+                    }
+                })
+            }       
         return;
     }
 
@@ -521,5 +523,31 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         return '';
     }
 
+    navigateUrlExists(assetName:string){
+        const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+        if(dashboardObj && dashboardObj.templateID)
+            return true;
+        else
+            return false;
+    }
+
+    navigateURL(deviceId: string, assetName: string) {
+        if (assetName && this.appId) {
+          const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+          if (dashboardObj && dashboardObj.templateID) {
+            if (dashboardObj.withTabGroup) {
+              this.router.navigate([
+                `/application/${this.appId}/tabgroup/${deviceId}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            } else if (dashboardObj.tabGroupID) {
+              this.router.navigate([
+                `/application/${this.appId}/tabgroup/${dashboardObj.tabGroupID}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            } else {
+              this.router.navigate([`/application/${this.appId}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            }
+          }
+        } else if (assetName) {
+          this.router.navigate([`/device/${deviceId}`]);
+        }
+      }
 }
 

@@ -59,7 +59,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
       <td mat-cell *matCellDef="let row">
         <span class="asset-overview-fake-link" title="{{row.id}}"
-          (click)="navigateURL( row.id, row.type)">{{row.id}}</span>
+          (click)="navigateURL( row.id, row.name)">{{row.id}}</span>
       </td>
     </ng-container>
 
@@ -189,23 +189,27 @@
 </div>
 
 <!-- Device list -->
-<div *ngIf="widgetHelper.getWidgetConfig().filteredAssets.length > 0; else noRecordFound">
+<div *ngIf="widgetHelper.getWidgetConfig().filteredAssets.length > 0; else noRecordFound" style="margin-top: -30px;">
   <div class="card-group bg-gray-lighter device-card-group" *ngIf="viewMode !== '2';">
-    <div class="card device-card" style="margin-bottom: 8px;"
+    <div class="card device-card"
       *ngFor="let mo of widgetHelper.getWidgetConfig().filteredAssets">
       <!-- HEADER -->
       <!-- <div class="card-header separator"> -->
       <div class="card-block">
 
         <div style="text-align: center;">
-          <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
+          <!-- <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
             href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
             <img style="height:125px;width:125px;"
               [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
-          </a>
-          <ng-template #justimage>
+          </a> -->
+          <span (click)="navigateURL(mo.id,mo.name)" [ngClass]="{'pointer':navigateUrlExists(mo.name)}">
+            <img style="height:125px;width:125px;"
+              [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
+          </span>
+          <!-- <ng-template #justimage>
             <img style="height:125px;width:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
-          </ng-template>
+          </ng-template> -->
           <span class="device-heading card-title" style="display:inherit">
             {{mo.name}}
           </span>

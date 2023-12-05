@@ -193,18 +193,38 @@
       </div>
     </div>
 
-    <div class="row form-group">
-      <div *ngFor="let mo of this.widgetHelper.getWidgetConfig().selectedDevices">
-        <div *ngIf="mo.c8y_IsDeviceGroup">
-          <div class="col-lg-12">
-            <label class="label-with-help">
-              {{ mo.name }} group dashboard url
-            </label>
-            <input class="form-control" type="text" [ngModelOptions]="{ standalone: true }" [(ngModel)]="
-                this.widgetHelper.getWidgetConfig().deviceSettings[
-                  'group' + mo.name
-                ]
-              " (change)="onConfigChanged()" />
+    <div class="row config-accordion" *ngIf="appId">
+      <button class="btn btn-default input-width" (click)="isExpandedDBS = !isExpandedDBS" type="button" style="width: 100%;">
+        <div class="pull-left float-left">Dashboard Settings
+        </div>
+        <span class="float-right pull-right"><i *ngIf="isExpandedDBS" class="fa fa-caret-up"></i>
+          <i *ngIf="!isExpandedDBS" class="fa fa-caret-down"></i></span>
+      </button>
+      <div class="config-accordion" id="isExpandedDBS" *ngIf="isExpandedDBS">
+        <div class="row" *ngFor="let dashboard of config.dashboardList;let i = index">
+          <div class="col-sm-12" *ngIf="dashboard.name">
+            <div class="col-sm-3">
+              <ng-select [items]="assetNames" bindLabel="name" [closeOnSelect]="false" [searchable]="true"
+                placeholder="Select Asset Name" (change)="addNewRecord(i)" bindValue="name" [(ngModel)]="dashboard.name">
+              </ng-select>
+            </div>
+            <div class="col-sm-3">
+              <input type="text" id="dashboarId{{i}}" class="form-control input-width" placeholder="Dashboard ID"
+                [(ngModel)]="dashboard.templateID">
+            </div>
+            <div class="col-sm-3">
+              <div class="btn-group device-list-switch-toggle ">
+                <label class="c8y-switch ">
+                  <input type="checkbox" id="withTabGroup{{i}}" [checked]="dashboard.withTabGroup"
+                    [(ngModel)]="dashboard.withTabGroup">
+                  <span></span> DeviceId as TabGroup
+                </label>
+              </div>
+            </div>
+            <div class="col-sm-3" *ngIf="!dashboard.withTabGroup">
+              <input type="text" id="tabGroupID{{i}}" class="form-control input-width" placeholder="TabGroup ID(Optional)"
+                [(ngModel)]="dashboard.tabGroupID">
+            </div>
           </div>
         </div>
       </div>

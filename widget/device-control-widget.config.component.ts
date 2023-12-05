@@ -33,6 +33,13 @@ export interface Property {
     label: string;
     value: string;
 }
+
+export interface DashboardConfig {
+    name?: any;
+    templateID?: string;
+    tabGroupID?: string;
+    tabGroup?: boolean;
+  }
 @Component({
     selector: "device-control-widget-config-component",
     templateUrl: "./device-control-widget.config.component.html",
@@ -72,6 +79,11 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     widgetHelper: WidgetHelper<WidgetConfig>;
     icons: ({ key: string; name: string; code: string; filter: string[]; } | { key: string; name: string; code: string; filter?: undefined; })[];
     otherPropList: boolean;
+
+    dashboardList: DashboardConfig[] = [];
+    appId=null;
+    isExpandedDBS=false;
+    assetNames:string[]=[];
 
     constructor(public operations: OperationService, public inventoryService: InventoryService, public alertService: AlertService, private invSvc: InventoryService,) {
         //make availiable for choosing
@@ -133,6 +145,13 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         throw new Error('Method not implemented.');
     }
     async ngOnInit(): Promise<void> {
+        this.appId=this.getAppId();
+        if (!this.config.dashboardList && this.appId) {
+            const dashboardObj: DashboardConfig = {};
+            dashboardObj.name = 'All';
+            this.dashboardList.push(dashboardObj);
+            this.config.dashboardList = this.dashboardList;
+        }
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
         this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService));
         this.widgetHelper.getWidgetConfig().deviceFilter = ""; //clear if you edit
@@ -243,7 +262,9 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         r = [...new Set(r)];
         this.widgetHelper.getWidgetConfig().assets = [...new Set(this.widgetHelper.getWidgetConfig().assets)];
         //console.log("assets", this.widgetHelper.getWidgetConfig().assets);
-
+        this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
+            this.assetNames.push(asset.name);
+        });
         //map to objects
         let ops = r.map(o => {
             return <DeviceOperation>{
@@ -331,5 +352,28 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.widgetHelper.getWidgetConfig().defaultListView = value;
     }
 
+    getAppId() {
+        const currentURL = window.location.href;
+        const routeParam = currentURL.split('#');
+        if (routeParam.length > 1) {
+            const appParamArray = routeParam[1].split('/');
+            const appIndex = appParamArray.indexOf('application');
+            if (appIndex !== -1) {
+                return appParamArray[appIndex + 1];
+            }
+        }
+        return '';
+    }
+
+    /**
+   * Add new Row for Dashbaord Settings
+   */
+  addNewRecord(currentIndex) {
+    if ((currentIndex + 1) === this.config.dashboardList.length) {
+      const dashboardObj: DashboardConfig = {};
+      dashboardObj.name = 'All';
+      this.config.dashboardList.push(dashboardObj);
+    }
+  }
 }
 
