@@ -814,25 +814,6 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             this.clearSubscriptions();
         }
     }
-    //Navigate URL to dashboard if dashboard is exist
-    navigateURL(deviceId: string, deviceType: string) {
-        if (deviceType && this.appId) {
-            const dashboardObj = this.configDashboardList.find((dashboard) => dashboard === deviceType || dashboard === 'All');
-            if (dashboardObj && dashboardObj) {
-                if (dashboardObj) {
-                    this.router.navigate([
-                        `/application/${this.appId}/tabgroup/${deviceId}/dashboard/${dashboardObj}/device/${deviceId}`]);
-                } else if (dashboardObj) {
-                    this.router.navigate([
-                        `/application/${this.appId}/tabgroup/${dashboardObj}/dashboard/${dashboardObj}/device/${deviceId}`]);
-                } else {
-                    this.router.navigate([`/application/${this.appId}/dashboard/${dashboardObj}/device/${deviceId}`]);
-                }
-            }
-        } else if (deviceType) {
-            this.router.navigate([`/device/${deviceId}`]);
-        }
-    }
     handleReatime(id) {
         // REALTIME ------------------------------------------------------------------------
         const manaogedObjectChannel = `/managedobjects/${id}`;
@@ -963,6 +944,36 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.dataSource.data = this.matData;
         this.updateDeviceStates();
     }
+
+    navigateUrlExists(assetName:string){
+        if(this.appId){
+            const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+        if(dashboardObj && dashboardObj.templateID)
+            return true;
+        else
+            return false;
+        }
+        return false;
+    }
+
+    navigateURL(deviceId: string, assetName: string) {
+        if (assetName && this.appId) {
+          const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+          if (dashboardObj && dashboardObj.templateID) {
+            if (dashboardObj.withTabGroup) {
+              this.router.navigate([
+                `/application/${this.appId}/tabgroup/${deviceId}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            } else if (dashboardObj.tabGroupID) {
+              this.router.navigate([
+                `/application/${this.appId}/tabgroup/${dashboardObj.tabGroupID}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            } else {
+              this.router.navigate([`/application/${this.appId}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
+            }
+          }
+        } else if (assetName) {
+          this.router.navigate([`/device/${deviceId}`]);
+        }
+      }
 
 }
 

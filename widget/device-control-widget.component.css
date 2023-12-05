@@ -173,10 +173,9 @@ img.withhover:hover {
 
 .device-card {
     transform-style: preserve-3d;
-    height: 260px;
+    height: fit-content;
     -webkit-backface-visibility: visible;
     backface-visibility: visible;
-    margin: 20px;
     max-width: 300px;
     width: 220px;
     transition: all 1s linear;
@@ -261,5 +260,7 @@ img.withhover:hover {
 
 }
 
-
+.pointer:hover{
+    cursor: pointer;
+}
 

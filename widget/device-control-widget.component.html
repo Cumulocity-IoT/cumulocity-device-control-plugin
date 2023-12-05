@@ -59,7 +59,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let row">
           <span class="asset-overview-fake-link" title="{{row.id}}"
-            (click)="navigateURL( row.id, row.type)">{{row.id}}</span>
+            (click)="navigateURL( row.id, row.name)">{{row.id}}</span>
         </td>
       </ng-container>
       <ng-container matColumnDef="name">
@@ -175,23 +175,19 @@
   </div>
 
   <!-- Device list -->
-  <div class="card-group bg-gray-lighter device-card-group"
+  <div class="card-group bg-gray-lighter device-card-group" style="margin-top: -40px;"
     *ngIf="((viewMode !== '2' && !isBusy) || (widgetHelper.getWidgetConfig().defaultListView === '3' && viewMode !== '2'))">
     <ng-container *ngFor="let mo of filterData">
-      <div class="card device-card" style="margin-bottom: 8px;" *ngIf="mo.type !== 'c8y_DeviceGroup'">
+      <div class="card device-card" *ngIf="mo.type !== 'c8y_DeviceGroup'">
         <!-- HEADER -->
         <!-- <div class="card-header separator"> -->
         <div class="card-block">
 
           <div style="text-align: center;">
-            <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
-              href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
+            <span (click)="navigateURL(mo.id,mo.name)" [ngClass]="{'pointer':navigateUrlExists(mo.name)}">
               <img style="height:125px;width:125px;"
-                [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
-            </a>
-            <ng-template #justimage>
-              <img style="height:125px;width:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
-            </ng-template>
+                [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
+            </span>
             <span class="device-heading card-title" style="display:inherit">
               {{mo.name}}
             </span>
