@@ -59,7 +59,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let row">
           <span class="asset-overview-fake-link" title="{{row.id}}"
-            (click)="navigateURL( row.id, row.name)">{{row.id}}</span>
+            (click)="navigateURL( row.id, row.type)">{{row.id}}</span>
         </td>
       </ng-container>
       <ng-container matColumnDef="name">
@@ -184,7 +184,7 @@
         <div class="card-block">
 
           <div style="text-align: center;">
-            <span (click)="navigateURL(mo.id,mo.name)" [ngClass]="{'pointer':navigateUrlExists(mo.name)}">
+            <span (click)="navigateURL(mo.id,mo.type)" [ngClass]="{'pointer':navigateUrlExists(mo.type)}">
               <img style="height:125px;width:125px;"
                 [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
             </span>

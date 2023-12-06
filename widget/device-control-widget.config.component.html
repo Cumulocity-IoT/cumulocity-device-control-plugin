@@ -195,7 +195,7 @@
       </div>
     </div>
 
-    <div class="row config-accordion" *ngIf="appId">
+    <div class="row config-accordion" *ngIf="appId" style="width: 90%; margin-left: 5%;">
       <button class="btn btn-default input-width" (click)="isExpandedDBS = !isExpandedDBS" type="button" style="width: 100%;">
         <div class="pull-left float-left">Dashboard Settings
         </div>
@@ -204,10 +204,10 @@
       </button>
       <div class="config-accordion" id="isExpandedDBS" *ngIf="isExpandedDBS">
         <div class="row" *ngFor="let dashboard of config.dashboardList;let i = index">
-          <div class="col-sm-12" *ngIf="dashboard.name">
+          <div class="col-sm-12" *ngIf="dashboard.type">
             <div class="col-sm-3">
-              <ng-select [items]="assetNames" bindLabel="name" [closeOnSelect]="false" [searchable]="true"
-                placeholder="Select Asset Name" (change)="addNewRecord(i)" bindValue="name" [(ngModel)]="dashboard.name">
+              <ng-select [items]="deviceTypes" bindLabel="type" [closeOnSelect]="false" [searchable]="true"
+                placeholder="Select Device Type" (change)="addNewRecord(i)" bindValue="type" [(ngModel)]="dashboard.type">
               </ng-select>
             </div>
             <div class="col-sm-3">

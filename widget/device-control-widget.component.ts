@@ -701,7 +701,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         });
 
 
-        console.log(this.widgetHelper.getWidgetConfig().assets);
+        // console.log(this.widgetHelper.getWidgetConfig().assets);
         //filter names
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().filteredAssets.filter(mo => {
             if (this.widgetHelper.getWidgetConfig().deviceFilter === undefined || this.widgetHelper.getWidgetConfig().deviceFilter === '') {
@@ -945,9 +945,9 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.updateDeviceStates();
     }
 
-    navigateUrlExists(assetName:string){
+    navigateUrlExists(deviceType:string){
         if(this.appId){
-            const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+            const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
         if(dashboardObj && dashboardObj.templateID)
             return true;
         else
@@ -956,9 +956,9 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         return false;
     }
 
-    navigateURL(deviceId: string, assetName: string) {
-        if (assetName && this.appId) {
-          const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.name === assetName || dashboard.name === 'All');
+    navigateURL(deviceId: string, deviceType: string) {
+        if (deviceType && this.appId) {
+          const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
           if (dashboardObj && dashboardObj.templateID) {
             if (dashboardObj.withTabGroup) {
               this.router.navigate([
@@ -970,7 +970,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
               this.router.navigate([`/application/${this.appId}/dashboard/${dashboardObj.templateID}/device/${deviceId}`]);
             }
           }
-        } else if (assetName) {
+        } else if (deviceType) {
           this.router.navigate([`/device/${deviceId}`]);
         }
       }

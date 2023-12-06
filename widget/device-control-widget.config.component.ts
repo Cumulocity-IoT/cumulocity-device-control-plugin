@@ -35,7 +35,7 @@ export interface Property {
 }
 
 export interface DashboardConfig {
-    name?: any;
+    type?: any;
     templateID?: string;
     tabGroupID?: string;
     tabGroup?: boolean;
@@ -83,7 +83,8 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     dashboardList: DashboardConfig[] = [];
     appId=null;
     isExpandedDBS=false;
-    assetNames:string[]=[];
+    // assetNames:string[]=[];
+    deviceTypes:string[]=[];
 
     constructor(public operations: OperationService, public inventoryService: InventoryService, public alertService: AlertService, private invSvc: InventoryService,) {
         //make availiable for choosing
@@ -110,7 +111,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
             withTotalPages: true,
           //  query: (queryString ? queryString : ''),
         };
-        console.log(filter, "")
+        // console.log(filter, "")
         this.invSvc.childAssetsList(id, filter).then(res => {
             res.data.forEach(mo => {
                 _this.getObjectsAllProperties(mo, _this.propertiesToDisplayList);
@@ -149,7 +150,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.appId=this.getAppId();
         if (!this.config.dashboardList && this.appId) {
             const dashboardObj: DashboardConfig = {};
-            dashboardObj.name = 'All';
+            dashboardObj.type = 'All';
             this.dashboardList.push(dashboardObj);
             this.config.dashboardList = this.dashboardList;
         }
@@ -264,8 +265,15 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         r = [...new Set(r)];
         this.widgetHelper.getWidgetConfig().assets = [...new Set(this.widgetHelper.getWidgetConfig().assets)];
         //console.log("assets", this.widgetHelper.getWidgetConfig().assets);
+        let selectedDeviceNames=[];
+        this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
+            selectedDeviceNames.push(device.name);
+        })
+        this.deviceTypes=[];
         this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
-            this.assetNames.push(asset.name);
+            if(!selectedDeviceNames.includes(asset.name) && !this.deviceTypes.includes(asset.type))
+                // this.assetNames.push(asset.name);
+                this.deviceTypes.push(asset.type);
         });
         //map to objects
         let ops = r.map(o => {
@@ -373,7 +381,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
   addNewRecord(currentIndex) {
     if ((currentIndex + 1) === this.config.dashboardList.length) {
       const dashboardObj: DashboardConfig = {};
-      dashboardObj.name = 'All';
+      dashboardObj.type = 'All';
       this.config.dashboardList.push(dashboardObj);
     }
   }
