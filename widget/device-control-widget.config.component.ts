@@ -85,6 +85,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     isExpandedDBS=false;
     // assetNames:string[]=[];
     deviceTypes:string[]=[];
+    selectedDeviceNames=[];
 
     constructor(public operations: OperationService, public inventoryService: InventoryService, public alertService: AlertService, private invSvc: InventoryService,) {
         //make availiable for choosing
@@ -148,14 +149,40 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     }
     async ngOnInit(): Promise<void> {
         this.appId=this.getAppId();
-        if (!this.config.dashboardList && this.appId) {
+        this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
+        if(!this.config.dashboardList && this.widgetHelper.getWidgetConfig().selectedDevices && this.widgetHelper.getWidgetConfig().selectedDevices.length>0 && this.appId){
+            this.dashboardList=[];
+            this.selectedDeviceNames=[];
+            let deviceTypesAdded:string[]=[];
+            this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
+                this.selectedDeviceNames.push(device.name);
+            });
+            this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
+                if(this.widgetHelper.getWidgetConfig().deviceSettings.hasOwnProperty('group' + device.name)){
+                    const url=this.widgetHelper.getWidgetConfig().deviceSettings['group' + device.name];
+                    const dashboardId=url.split("dashboard")[1].split("/")[1];                  
+                    this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
+                        if(!this.selectedDeviceNames.includes(asset.name) && !deviceTypesAdded.includes(asset.type)){
+                            const dashboardObj: DashboardConfig = {};
+                            dashboardObj.type = asset.type;
+                            dashboardObj.templateID=dashboardId;
+                            this.dashboardList.push(dashboardObj);
+                            deviceTypesAdded.push(asset.type);
+                        }
+                    });
+                }
+            });
+            const dashboardObj: DashboardConfig = {};
+            dashboardObj.type = 'All';
+            this.dashboardList.push(dashboardObj);
+            this.config.dashboardList=this.dashboardList;
+        }
+        else if ((!this.config.dashboardList || this.config.dashboardList.length==0) && this.appId) {
             const dashboardObj: DashboardConfig = {};
             dashboardObj.type = 'All';
             this.dashboardList.push(dashboardObj);
             this.config.dashboardList = this.dashboardList;
         }
-
-        this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
         this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService));
         this.widgetHelper.getWidgetConfig().deviceFilter = ""; //clear if you edit
         //console.log("OVERRIDE", this.widgetHelper.getWidgetConfig().overrideDashboardDevice, "DEVICE TARGET", this.widgetHelper.getDeviceTarget());
@@ -265,13 +292,13 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         r = [...new Set(r)];
         this.widgetHelper.getWidgetConfig().assets = [...new Set(this.widgetHelper.getWidgetConfig().assets)];
         //console.log("assets", this.widgetHelper.getWidgetConfig().assets);
-        let selectedDeviceNames=[];
+        this.selectedDeviceNames=[];
         this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
-            selectedDeviceNames.push(device.name);
+            this.selectedDeviceNames.push(device.name);
         })
         this.deviceTypes=[];
         this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
-            if(!selectedDeviceNames.includes(asset.name) && !this.deviceTypes.includes(asset.type))
+            if(!this.selectedDeviceNames.includes(asset.name) && !this.deviceTypes.includes(asset.type))
                 // this.assetNames.push(asset.name);
                 this.deviceTypes.push(asset.type);
         });

@@ -195,7 +195,7 @@
       </div>
     </div>
 
-    <div class="row config-accordion" *ngIf="appId" style="width: 90%; margin-left: 5%;">
+    <div class="row config-accordion" *ngIf="appId" style="width: 99%; margin-left: 0.5%;">
       <button class="btn btn-default input-width" (click)="isExpandedDBS = !isExpandedDBS" type="button" style="width: 100%;">
         <div class="pull-left float-left">Dashboard Settings
         </div>
@@ -227,6 +227,23 @@
               <input type="text" id="tabGroupID{{i}}" class="form-control input-width" placeholder="TabGroup ID(Optional)"
                 [(ngModel)]="dashboard.tabGroupID">
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div *ngFor="let mo of this.widgetHelper.getWidgetConfig().selectedDevices">
+        <div *ngIf="mo.c8y_IsDeviceGroup">
+          <div class="col-lg-12">
+            <label class="label-with-help">
+              {{ mo.name }} group dashboard url <b>(Depricated)</b>
+            </label>
+            <input disabled class="form-control" type="text" [ngModelOptions]="{ standalone: true }" [(ngModel)]="
+                this.widgetHelper.getWidgetConfig().deviceSettings[
+                  'group' + mo.name
+                ]
+              " (change)="onConfigChanged()" />
           </div>
         </div>
       </div>

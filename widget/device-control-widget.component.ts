@@ -945,19 +945,17 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.updateDeviceStates();
     }
 
-    navigateUrlExists(deviceType:string){
-        if(this.appId){
+    navigateUrlExists(deviceType:string,deviceId:string){
+        if(this.appId && this.config.dashboardList){
             const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
-        if(dashboardObj && dashboardObj.templateID)
-            return true;
-        else
-            return false;
+            if(dashboardObj && dashboardObj.templateID)
+                return true;
         }
         return false;
     }
 
     navigateURL(deviceId: string, deviceType: string) {
-        if (deviceType && this.appId) {
+        if (deviceType && this.appId && this.config.dashboardList) {
           const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
           if (dashboardObj && dashboardObj.templateID) {
             if (dashboardObj.withTabGroup) {
@@ -976,4 +974,3 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
       }
 
 }
-
