@@ -232,7 +232,7 @@
       </div>
     </div>
 
-    <div class="row form-group">
+    <div class="row form-group" *ngIf="appId">
       <div *ngFor="let mo of this.widgetHelper.getWidgetConfig().selectedDevices">
         <div *ngIf="mo.c8y_IsDeviceGroup">
           <div class="col-lg-12">

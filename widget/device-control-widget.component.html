@@ -182,16 +182,22 @@
         <!-- HEADER -->
         <!-- <div class="card-header separator"> -->
         <div class="card-block">
-
           <div style="text-align: center;">
-            <span *ngIf="!config.dashboardList">
-              <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo)"
-              href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
+            <span *ngIf="!config.dashboardList && appId">
+              <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
+                href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
                 <img style="height:125px;width:125px;"
                   [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
               </a>
+              <ng-template #justimage>
+                <img style="height:125px;width:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
+              </ng-template>
             </span>            
-            <span *ngIf="config.dashboardList" (click)="navigateURL(mo.id,mo.type)" [ngClass]="{'pointer':navigateUrlExists(mo.type,mo.id)}">
+            <span *ngIf="config.dashboardList && appId" (click)="navigateURL(mo.id,mo.type)" [ngClass]="{'pointer':navigateUrlExists(mo.type)}">
+              <img style="height:125px;width:125px;"
+                [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
+            </span>
+            <span *ngIf="!appId">
               <img style="height:125px;width:125px;"
                 [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
             </span>

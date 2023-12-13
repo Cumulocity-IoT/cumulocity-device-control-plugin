@@ -945,9 +945,9 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.updateDeviceStates();
     }
 
-    navigateUrlExists(deviceType:string,deviceId:string){
+    navigateUrlExists(deviceType:string){
         if(this.appId && this.config.dashboardList){
-            const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
+            const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === 'All' || dashboard.type === deviceType);
             if(dashboardObj && dashboardObj.templateID)
                 return true;
         }
@@ -955,8 +955,8 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     }
 
     navigateURL(deviceId: string, deviceType: string) {
-        if (deviceType && this.appId && this.config.dashboardList) {
-          const dashboardObj = this.config.dashboardList.find((dashboard) => dashboard.type === deviceType || dashboard.type === 'All');
+        if (/*deviceType && */this.appId && this.config.dashboardList) {
+          const dashboardObj = this.config.dashboardList.find((dashboard) =>dashboard.type === 'All' || dashboard.type === deviceType);
           if (dashboardObj && dashboardObj.templateID) {
             if (dashboardObj.withTabGroup) {
               this.router.navigate([

@@ -83,9 +83,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     dashboardList: DashboardConfig[] = [];
     appId=null;
     isExpandedDBS=false;
-    // assetNames:string[]=[];
     deviceTypes:string[]=[];
-    selectedDeviceNames=[];
 
     constructor(public operations: OperationService, public inventoryService: InventoryService, public alertService: AlertService, private invSvc: InventoryService,) {
         //make availiable for choosing
@@ -152,17 +150,13 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
         if(!this.config.dashboardList && this.widgetHelper.getWidgetConfig().selectedDevices && this.widgetHelper.getWidgetConfig().selectedDevices.length>0 && this.appId){
             this.dashboardList=[];
-            this.selectedDeviceNames=[];
             let deviceTypesAdded:string[]=[];
-            this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
-                this.selectedDeviceNames.push(device.name);
-            });
             this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
                 if(this.widgetHelper.getWidgetConfig().deviceSettings.hasOwnProperty('group' + device.name)){
                     const url=this.widgetHelper.getWidgetConfig().deviceSettings['group' + device.name];
                     const dashboardId=url.split("dashboard")[1].split("/")[1];                  
                     this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
-                        if(!this.selectedDeviceNames.includes(asset.name) && !deviceTypesAdded.includes(asset.type)){
+                        if(asset.type && !asset.hasOwnProperty("c8y_IsDeviceGroup") && !deviceTypesAdded.includes(asset.type)){
                             const dashboardObj: DashboardConfig = {};
                             dashboardObj.type = asset.type;
                             dashboardObj.templateID=dashboardId;
@@ -291,15 +285,10 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         //unique 
         r = [...new Set(r)];
         this.widgetHelper.getWidgetConfig().assets = [...new Set(this.widgetHelper.getWidgetConfig().assets)];
-        //console.log("assets", this.widgetHelper.getWidgetConfig().assets);
-        this.selectedDeviceNames=[];
-        this.widgetHelper.getWidgetConfig().selectedDevices.forEach((device)=>{
-            this.selectedDeviceNames.push(device.name);
-        })
+        // console.log("assets", this.widgetHelper.getWidgetConfig().assets);
         this.deviceTypes=[];
         this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
-            if(!this.selectedDeviceNames.includes(asset.name) && !this.deviceTypes.includes(asset.type))
-                // this.assetNames.push(asset.name);
+            if(asset.type && !asset.hasOwnProperty("c8y_IsDeviceGroup") && !this.deviceTypes.includes(asset.type))
                 this.deviceTypes.push(asset.type);
         });
         //map to objects
