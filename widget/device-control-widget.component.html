@@ -46,10 +46,12 @@
     </div>
   </div>
 </div>
-<pagination [style.visibility]="totalRecord === -1? 'hidden': 'visible'" class="m-t-8 m-r-8 p-b-8 pull-right"
-  previousText=" " nextText=" " [maxSize]="10" [totalItems]="totalRecord" [itemsPerPage]="pageSize"
+<div class="row max-width-100" *ngIf="widgetHelper.getWidgetConfig().includeChild">
+  <pagination [style.visibility]="totalRecord === -1? 'hidden': 'visible'" class="pull-right"
+  previousText=" " nextText=" " [maxSize]="50" [totalItems]="totalRecord" [itemsPerPage]="pageSize"
   [(ngModel)]="currentPage" (pageChanged)="getPageEvent($event)"></pagination>
-<div style="text-align: center;">
+</div>
+<div style="text-align: center;" *ngIf="isBusy">
   <c8y-loading *ngIf="isBusy"></c8y-loading>
 </div>
 <div *ngIf="widgetHelper.getWidgetConfig().filteredAssets.length > 0; else noRecordFound">
@@ -175,10 +177,10 @@
   </div>
 
   <!-- Device list -->
-  <div class="card-group bg-gray-lighter device-card-group" style="margin-top: -40px;"
+  <div class="card-group device-card-group"
     *ngIf="((viewMode !== '2' && !isBusy) || (widgetHelper.getWidgetConfig().defaultListView === '3' && viewMode !== '2'))">
     <ng-container *ngFor="let mo of filterData">
-      <div class="card device-card" *ngIf="mo.type !== 'c8y_DeviceGroup'">
+      <div class="card device-card">
         <!-- HEADER -->
         <!-- <div class="card-header separator"> -->
         <div class="card-block">
@@ -186,19 +188,19 @@
             <span *ngIf="!config.dashboardList && appId">
               <a *ngIf="widgetHelper.getWidgetConfig().dashboardUrl(mo) else justimage"
                 href="{{widgetHelper.getWidgetConfig().dashboardUrl(mo)}}">
-                <img style="height:125px;width:125px;"
+                <img style="height:125px;"
                   [src]="widgetHelper.getWidgetConfig().deviceIcon(mo.name) | SafeImage" alt="Device" title="{{mo.name}}">
               </a>
               <ng-template #justimage>
-                <img style="height:125px;width:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
+                <img style="height:125px;" [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
               </ng-template>
             </span>            
             <span *ngIf="config.dashboardList && appId" (click)="navigateURL(mo.id,mo.type)" [ngClass]="{'pointer':navigateUrlExists(mo.type)}">
-              <img style="height:125px;width:125px;"
+              <img style="height:125px;"
                 [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
             </span>
             <span *ngIf="!appId">
-              <img style="height:125px;width:125px;"
+              <img style="height:125px;"
                 [src]="mo._boxImage" alt="Device" title="{{mo.name}}">
             </span>
             <span class="device-heading card-title" style="display:inherit">

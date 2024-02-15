@@ -33,6 +33,7 @@ import { MatSort } from '@angular/material/sort';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DeviceControlService } from './device-control.service';
 import { Router } from '@angular/router';
+import { GpAssetViewerService } from './gp-asset-viewer.service';
 export interface DeviceData {
     id?: string;
     name?: string;
@@ -78,7 +79,6 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     realtimeState: any;
     allSubscriptions: any = [];
     filterAssets: any;
-    deviceListService: any;
     filterData = [];
     deviceListData = [];
     configDashboardList: [];
@@ -106,11 +106,13 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         private inventoryBinaryService: InventoryBinaryService,
         private deviceControlService: DeviceControlService,
         private router: Router,
-        private realTimeService: Realtime, private sanitizer: DomSanitizer) {
+        private realTimeService: Realtime, private sanitizer: DomSanitizer,
+        private deviceListService: GpAssetViewerService,) {
     }
     async ngOnInit(): Promise<void> {
         this.isBusy = true;
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
+        this.pageSize = this.widgetHelper.getWidgetConfig()?.pageSize;
         //this.displayMode = this.widgetHelper.getWidgetConfig().displayMode ? this.widgetHelper.getWidgetConfig().displayMode : 'All';
         this.displayedColumnsForList = this.widgetHelper.getWidgetConfig().selectedInputs ? this.widgetHelper.getWidgetConfig().selectedInputs : ['id', 'name', 'owner', 'lastUpdated', 'creationTime', 'c8y_Availability.status', 'c8y_Notes', 'c8y_ActiveAlarmsStatus'];
         await this.updateDeviceStates(true); //all devices
@@ -264,9 +266,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
                 deviceData[element.value] = this.getTheValue(x, element.value);
                 deviceData[element.value] = JSON.stringify(this.getTheValue(x, element.value));
             });
-            if (deviceData.type !== 'c8y_DeviceGroup') {
-                this.matData.push(deviceData);
-            }
+            this.matData.push(deviceData);
             this.matTableLoadAndFilter();
         });
     }
@@ -671,23 +671,23 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     async updateDeviceStates(makeCall: boolean = false): Promise<void> {
         this.isBusy = true;
         //here we just update the objects to refect their current state. 
-        let ids: string[] = this.widgetHelper.getWidgetConfig().assets.map(mo => mo.id);
-
         if (makeCall) {
-            const response: any = await this.widgetHelper.getDevices(this.inventoryService, ids, this.pageSize, this.currentPage);
+            const response: any = await this.widgetHelper.getDevices(this.inventoryService, this.pageSize, this.currentPage, this.widgetHelper.getWidgetConfig().includeChild);
             let retrieved = [];
             if (response.data && response.data.length > 0) {
                 response.data.forEach((data) => {
                     retrieved.push(data);
                 })
             }
-            if (response.data && response.data.length < this.pageSize) {
-                this.totalRecord = (this.pageSize * (response.paging.totalPages - 1)) + response.data.length;
-            } else {
-                this.totalRecord = this.pageSize * response.paging.totalPages;
+            if (response.paging.length == 1) {
+                if (response.data && response.data.length < this.pageSize) {
+                    this.totalRecord = (this.pageSize * (response.paging[0].totalPages - 1)) + response.data.length;
+                } else {
+                    this.totalRecord = this.pageSize * response.paging[0].totalPages;
+                } 
             }
             this.widgetHelper.getWidgetConfig().assets = retrieved;
-
+            
         }
 
         //filter at risk
@@ -699,7 +699,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
             }
             return this.deviceAtRisk(mo);
         });
-
+        
 
         // console.log(this.widgetHelper.getWidgetConfig().assets);
         //filter names
@@ -836,9 +836,8 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     }
 
     manageRealtime(updatedDeviceData) {
-
+        console.log("updatedDeviceData from manageRealTime:",updatedDeviceData);
         this.widgetHelper.getWidgetConfig().assets.push(updatedDeviceData);
-
 
         //filter at risk
         this.widgetHelper.getWidgetConfig().filteredAssets = this.widgetHelper.getWidgetConfig().assets.filter(mo => {
@@ -942,7 +941,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.deviceListData = [];
         this.filterData = [];
         this.dataSource.data = this.matData;
-        this.updateDeviceStates();
+        this.updateDeviceStates(true);
     }
 
     navigateUrlExists(deviceType:string){
