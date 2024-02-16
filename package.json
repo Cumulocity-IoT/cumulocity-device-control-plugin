@@ -1,6 +1,6 @@
 {
   "name": "cumulocity-device-control-plugin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "This Device Control widget allows to display and control devices and groups of devices.",
   "scripts": {
     "start": "c8ycli server",

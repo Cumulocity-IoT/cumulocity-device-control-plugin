@@ -159,7 +159,6 @@ export class WidgetHelper<CONFIGTYPE> {
                 }
             }
         }
-        console.log("deviceGroups:",mos);
         return mos;
     }
 

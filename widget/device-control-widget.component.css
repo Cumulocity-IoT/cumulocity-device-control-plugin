@@ -264,3 +264,13 @@ img.withhover:hover {
 :host ::ng-deep .page-link{
     height:  32px;
   }
+
+.device-img-span{
+    display: block;
+    height: 125px;
+}
+
+.device-img{
+    max-width: 100%;
+    max-height: 100%;
+}

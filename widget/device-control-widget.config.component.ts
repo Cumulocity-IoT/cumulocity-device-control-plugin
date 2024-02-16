@@ -153,7 +153,10 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.appId=this.getAppId();
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
-        this.widgetHelper.getWidgetConfig().pageSize ? this.widgetHelper.getWidgetConfig().pageSize : 5; //setting pageSize to 5 by default.
+        if(!_.has(this.widgetHelper.getWidgetConfig(),'pageSize')){ //handelling for already configured plugin
+            this.widgetHelper.getWidgetConfig()['pageSize']=5;
+        }
+        this.widgetHelper.getWidgetConfig().pageSize || this.widgetHelper.getWidgetConfig().pageSize == undefined ? this.widgetHelper.getWidgetConfig().pageSize : 5; //setting pageSize to 5 by default.
         if(!this.config.dashboardList && this.widgetHelper.getWidgetConfig().selectedDevices && this.widgetHelper.getWidgetConfig().selectedDevices.length>0 && this.appId){
             this.dashboardList=[];
             let deviceTypesAdded:string[]=[];

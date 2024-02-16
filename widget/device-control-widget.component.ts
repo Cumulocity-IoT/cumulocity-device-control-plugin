@@ -836,7 +836,6 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
     }
 
     manageRealtime(updatedDeviceData) {
-        console.log("updatedDeviceData from manageRealTime:",updatedDeviceData);
         this.widgetHelper.getWidgetConfig().assets.push(updatedDeviceData);
 
         //filter at risk
