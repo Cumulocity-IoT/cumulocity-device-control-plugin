@@ -38,9 +38,6 @@
     border-bottom-color: var(--table-border, var(--component-border, var(--root-component-border, rgba(0, 0, 0, 0.1))));
 }
 
-.btn-group {
-    padding-bottom: 45px;
-}
 
 .small-icon {
     width: 5em;
@@ -264,3 +261,16 @@ img.withhover:hover {
     cursor: pointer;
 }
 
+:host ::ng-deep .page-link{
+    height:  32px;
+  }
+
+.device-img-span{
+    display: block;
+    height: 125px;
+}
+
+.device-img{
+    max-width: 100%;
+    max-height: 100%;
+}

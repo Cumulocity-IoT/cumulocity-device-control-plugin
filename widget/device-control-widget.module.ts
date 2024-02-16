@@ -30,8 +30,9 @@ import { MatTableModule } from "@angular/material/table";
 import { DeviceControlService } from "./device-control.service";
 
 import { MatSortModule } from '@angular/material/sort';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 @NgModule({
-    imports: [CoreModule, CommonModule, HttpClientModule, NgSelectModule, MatTableModule,MatSortModule,],
+    imports: [CoreModule, CommonModule, HttpClientModule, NgSelectModule, MatTableModule,MatSortModule,PaginationModule.forRoot()],
     declarations: [DeviceControlWidget, DeviceControlWidgetConfig, SafeImage],
     entryComponents: [DeviceControlWidget, DeviceControlWidgetConfig],
     providers: [

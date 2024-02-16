@@ -65,6 +65,25 @@
   </div>
   <div class="configSection">
     <h4 translate>Select one or more Devices of the same type</h4>
+    <div class="row">
+      <div class="form-check-inline col-sm-4">
+        <input class="form-check-input" type="checkbox" name="includeChild"
+          [(ngModel)]="widgetHelper.getWidgetConfig().includeChild" (ngModelChange)="includeChildToggle()" />
+        Show child devices/assets<span class="help-icon">
+          <img src="{{ CONST_HELP_IMAGE_FILE }}" alt="help tooltip"
+            title="Select single group/asset to show child devices/assets" />
+        </span>
+      </div>
+      <div class="col-sm-4" *ngIf="widgetHelper.getWidgetConfig().includeChild" style="display: flex; justify-content: center;">
+        <label for="pageSize-selector" class="col-sm-6" style="align-self: center;">Page size:</label>
+        <select id="pageSize-selector" [(ngModel)]="widgetHelper.getWidgetConfig().pageSize"
+          (ngModelChange)="pageSelected()">
+          <option *ngFor="let option of pageSizes" [value]="option">
+            {{option}}
+          </option>
+        </select>
+      </div>
+    </div>
     <div class="row form-group">
       <div class="col-lg-12">
         <label class="label-with-help" for="deviceSelector" class="label-with-help" translate>Select device
@@ -74,7 +93,7 @@
           </span>
         </label>
         <ng-select class="selectDropdown" [items]="rawDevices | async" [multiple]="true" bindLabel="name" [closeOnSelect]="false"
-          [(ngModel)]="widgetHelper.getWidgetConfig().selectedDevices" (ngModelChange)="onConfigChanged()">
+          [(ngModel)]="widgetHelper.getWidgetConfig().selectedDevices" (ngModelChange)="onConfigChanged()" [maxSelectedItems]="widgetHelper.getWidgetConfig().includeChild ? 1 : 2000">
           
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
             <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" />

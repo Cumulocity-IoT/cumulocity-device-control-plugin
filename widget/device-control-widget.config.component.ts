@@ -52,6 +52,7 @@ export interface DashboardConfig {
 
 export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
 
+    pageSizes=[5,10,20,50,100];
     sublist = [];
     propertiesToDisplayList: Property[] = [];
     //members
@@ -90,6 +91,10 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.icons = [...deliteList.icons];
         this.rawOperations = new BehaviorSubject<DeviceOperation[]>([]);
         this.assets = new BehaviorSubject<IManagedObject[]>([]);
+    }
+
+    public pageSelected(){
+        this.onConfigChanged();
     }
 
     getIconString(code) {
@@ -148,6 +153,10 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.appId=this.getAppId();
         this.widgetHelper = new WidgetHelper(this.config, WidgetConfig); //default access through here
+        if(!_.has(this.widgetHelper.getWidgetConfig(),'pageSize')){ //handelling for already configured plugin
+            this.widgetHelper.getWidgetConfig()['pageSize']=5;
+        }
+        this.widgetHelper.getWidgetConfig().pageSize || this.widgetHelper.getWidgetConfig().pageSize == undefined ? this.widgetHelper.getWidgetConfig().pageSize : 5; //setting pageSize to 5 by default.
         if(!this.config.dashboardList && this.widgetHelper.getWidgetConfig().selectedDevices && this.widgetHelper.getWidgetConfig().selectedDevices.length>0 && this.appId){
             this.dashboardList=[];
             let deviceTypesAdded:string[]=[];
@@ -177,7 +186,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
             this.dashboardList.push(dashboardObj);
             this.config.dashboardList = this.dashboardList;
         }
-        this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService));
+        this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService,this.widgetHelper.getWidgetConfig().includeChild));
         this.widgetHelper.getWidgetConfig().deviceFilter = ""; //clear if you edit
         //console.log("OVERRIDE", this.widgetHelper.getWidgetConfig().overrideDashboardDevice, "DEVICE TARGET", this.widgetHelper.getDeviceTarget());
         if (!this.widgetHelper.getWidgetConfig().overrideDashboardDevice && this.widgetHelper.getDeviceTarget()) {
@@ -315,6 +324,11 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         this.populateOperations();
         this.widgetHelper.setWidgetConfig(this.config); //propgate changes 
         //console.log(this.widgetHelper.getWidgetConfig());
+    }
+
+    includeChildToggle(){
+        this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService,this.widgetHelper.getWidgetConfig().includeChild));
+        this.widgetHelper.getWidgetConfig().selectedDevices=[];
     }
 
     addToggle() {

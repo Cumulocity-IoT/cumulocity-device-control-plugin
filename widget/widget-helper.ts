@@ -110,26 +110,28 @@ export class WidgetHelper<CONFIGTYPE> {
     }
 
 
-    async getDevicesAndGroups(inventoryService: InventoryService): Promise<IManagedObject[]> {
-
-        let mos: IManagedObject[] = await this.getDeviceGroups(inventoryService);
-
-        const filter: object = {
-            pageSize: 2000,
-            withTotalPages: true,
-            query: "has(c8y_SupportedOperations) or has(c8y_IsDevice) or has(c8y_IsDeviceGroup)",
-        };
-
-        const query = {
-            name: "*",
-        };
-
-        //const { data, res, paging } = await
-        const { data, res, paging } = await inventoryService.listQueryDevices(query, filter);
-        if (res.status === 200) {
-            mos.push(...data);
+    async getDevicesAndGroups(inventoryService: InventoryService,includeChild:boolean): Promise<IManagedObject[]> {
+        let mos: IManagedObject[];
+        if(includeChild){
+            mos = await this.getDeviceGroups(inventoryService);
         }
-        //console.log("DEVICES AND GROUPS", mos);
+        else{
+            const filter: object = {
+                pageSize: 2000,
+                withTotalPages: true,
+                query: "has(c8y_SupportedOperations) or has(c8y_IsDevice) or has(c8y_IsAsset)",
+            };
+    
+            const query = {
+                name: "*",
+            };
+    
+            //const { data, res, paging } = await
+            const { data, res, paging } = await inventoryService.listQueryDevices(query, filter);
+            if (res.status === 200) {
+                mos=data;
+            }
+        }
         return mos;
     }
 
@@ -141,7 +143,7 @@ export class WidgetHelper<CONFIGTYPE> {
         const filter: object = {
             pageSize: 2000,
             withTotalPages: true,
-            query: "has(c8y_IsDeviceGroup)",
+            query: "has(c8y_IsAsset) or has(c8y_IsDeviceGroup)",
         };
 
         const query = {
@@ -160,7 +162,7 @@ export class WidgetHelper<CONFIGTYPE> {
         return mos;
     }
 
-    async getDevices(inventoryService: InventoryService, ids: string[], pageSize: any, currentPage: any) {
+    async getDevices(inventoryService: InventoryService, pageSize: any, currentPage: any, includeChild:boolean) {
         /*let queryString = '';
         if (deviceType === 'Assets') {
             queryString = 'has(c8y_IsAsset)'
@@ -171,26 +173,24 @@ export class WidgetHelper<CONFIGTYPE> {
             data: [],
             paging: []
         };
-        const filter: object = {
-            pageSize,
-            withTotalPages: true,
-            currentPage
-            //query: (queryString ? queryString : ''),
-        };
 
-        if (this.config['selectedDevices'].length > 1) {
-            let resp: any;
+        if (this.config['selectedDevices'].length > 0 && !includeChild) {
             for (let i = 0; i < this.config['selectedDevices'].length; i++) {
                 let { data } = await inventoryService.detail(this.config['selectedDevices'][i].id);
                 response.data = response.data.concat(Object.assign(data));
-                resp = (await inventoryService.childAssetsList(this.config['selectedDevices'][i].id, filter));
-                response.data = response.data.concat(Object.assign(resp.data));
-                response.paging = response.paging.concat(Object.assign(resp.paging));
-                //console.log(response.data);
             }
-        } else {
-            let { data } = await inventoryService.detail(this.config['selectedDevices'][0].id);
-            response.data = response.data.concat(Object.assign(data));
+        } 
+        else if (this.config['selectedDevices'].length == 1 && includeChild) {
+            const filter: any = {
+                pageSize:pageSize,
+                withTotalPages: true,
+                currentPage:currentPage
+            };
+            if(!_.has(this.config['selectedDevices'][0],'c8y_IsDeviceGroup')){
+                let { data } = await inventoryService.detail(this.config['selectedDevices'][0].id);
+                response.data = response.data.concat(Object.assign(data));
+                filter.pageSize=filter.pageSize-1;
+            }
             let resp: any = (await inventoryService.childAssetsList(this.config['selectedDevices'][0].id, filter));
             response.data = response.data.concat(Object.assign(resp.data));
             response.paging = response.paging.concat(Object.assign(resp.paging));

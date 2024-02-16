@@ -30,6 +30,8 @@ export class WidgetConfig {
      * Members for the config
      * widgetConfiguration.myValue
      */
+    includeChild?:boolean=true;
+    pageSize?:number=5;
     group: Map<string, string>;
     selectedDevices: IManagedObject[]; //can include groups
     assets: IManagedObject[]; //should be just devices
