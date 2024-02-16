@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { Injectable, OnInit } from '@angular/core';
-import { Service, FetchClient } from '@c8y/client';
+import { Injectable } from '@angular/core';
+import { FetchClient , AlarmService, IManagedObject, IAlarm, Severity} from '@c8y/client';
 import { AlertService } from '@c8y/ngx-components';
 @Injectable()
 export class DeviceControlService{
@@ -26,7 +26,7 @@ export class DeviceControlService{
   baseUrl = 'service';
   isMSExist = false;
 
-  constructor(private client: FetchClient, private alertervice: AlertService) {
+  constructor(private client: FetchClient, private alertervice: AlertService,private alarmService: AlarmService) {
   }
 
   post(amberBoonLogicObj: any): any {
@@ -76,5 +76,56 @@ export class DeviceControlService{
     } else {
       this.alertervice.danger('Application not found');
     }
+  }
+
+  async getAlarmsForAsset(asset: IManagedObject): Promise<{
+    minor: number,
+    major: number,
+    critical: number,
+    warning: number
+  }> {
+    const filter = {
+      dateFrom: '1970-01-01',
+      dateTo: new Date().toISOString(),
+      pageSize: 2000,
+      severity: 'WARNING,MINOR,MAJOR,CRITICAL',
+      source: asset.id,
+      status: 'ACTIVE',
+      withSourceAssets: true,
+      withSourceDevices: true
+    }
+
+    const alarms = (await this.alarmService.list(filter)).data;
+    const alarmCount = this.calculateAlarmCounts(alarms);
+
+    return alarmCount;
+  }
+
+  private calculateAlarmCounts(alarms: IAlarm[]): {
+    minor: number,
+    major: number,
+    critical: number,
+    warning: number
+  } {
+    const alarmCount = {
+      minor: 0,
+      major: 0,
+      critical: 0,
+      warning: 0
+    }
+
+    alarms.forEach(alarm => {
+      if (alarm.severity === Severity.CRITICAL) {
+        alarmCount.critical += alarm.count
+      } else if (alarm.severity === Severity.MAJOR) {
+        alarmCount.major += alarm.count
+      } else if (alarm.severity === Severity.MINOR) {
+        alarmCount.minor += alarm.count
+      } else if (alarm.severity === Severity.WARNING) {
+        alarmCount.warning += alarm.count
+      }
+    });
+
+    return alarmCount;
   }
 }

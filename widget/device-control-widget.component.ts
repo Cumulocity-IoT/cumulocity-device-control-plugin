@@ -19,21 +19,19 @@
  * @format
  */
 
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { OperationService, OperationStatus, IOperation, IManagedObject, InventoryService, InventoryBinaryService, ApplicationService } from '@c8y/client';
 import { WidgetHelper } from "./widget-helper";
 import { WidgetConfig, DeviceOperation } from "./widget-config";
 import * as _ from 'lodash';
-import { Observable, Subscription, interval, Subject, fromEvent, BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
-import { AlertService, Route } from '@c8y/ngx-components';
+import { Observable, Subscription, interval, Subject, BehaviorSubject } from 'rxjs';
+import { AlertService } from '@c8y/ngx-components';
 import { Realtime } from '@c8y/ngx-components/api';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DeviceControlService } from './device-control.service';
 import { Router } from '@angular/router';
-import { GpAssetViewerService } from './gp-asset-viewer.service';
 export interface DeviceData {
     id?: string;
     name?: string;
@@ -106,8 +104,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         private inventoryBinaryService: InventoryBinaryService,
         private deviceControlService: DeviceControlService,
         private router: Router,
-        private realTimeService: Realtime, private sanitizer: DomSanitizer,
-        private deviceListService: GpAssetViewerService,) {
+        private realTimeService: Realtime, private sanitizer: DomSanitizer) {
     }
     async ngOnInit(): Promise<void> {
         this.isBusy = true;
@@ -167,7 +164,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         let availability = x.c8y_Availability ? x.c8y_Availability.status : undefined;
         //let connectionStatus = x.c8y_Connection ? x.c8y_Connection.status : undefined;
 
-        alertDesc = (x.hasOwnProperty('c8y_IsAsset')) ? await this.deviceListService.getAlarmsForAsset(x) : this.checkAlarm(x, alertDesc);
+        alertDesc = (x.hasOwnProperty('c8y_IsAsset')) ? await this.deviceControlService.getAlarmsForAsset(x) : this.checkAlarm(x, alertDesc);
         this.getAlarmAndAvailabilty(x, promArr).then((res) => {
             const deviceData: DeviceData = {};
             res.forEach(data => {
@@ -940,7 +937,7 @@ export class DeviceControlWidget implements OnDestroy, OnInit {
         this.deviceListData = [];
         this.filterData = [];
         this.dataSource.data = this.matData;
-        this.updateDeviceStates(true);
+        this.updateDeviceStates(true); // 'true' to get devices on page change
     }
 
     navigateUrlExists(deviceType:string){
