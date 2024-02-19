@@ -59,23 +59,27 @@ Congratulations! Device Control Widget is configured.
 
 The widget configuration page contains a number of configuration attributes.
 
-![addwidget](images/initialoptions.png)
+![addwidget](images/defaultConfiguration.png)
 
 -   **Title** : Enter the title which will display at the top of your widget
 
+**Layout Options**
+
+-   **Display as** : Select widget's display option from the dropdown.
+-   **List view settings** 
+    -   **Table inputs** : select the fields to show in list/table view.
+
 **Device Options**
+-   **Show child devices/assets** : check to show the child devices/assets of group to be selected.
+-   **Page size** : select the number of child devices/assets to show in the page.
+-   **Select device** : 
+    -   Choose a single group of device/asset when `Show child devices/assets` is checked. 
+    -   Choose one or more device/asset when `Show child devices/assets` is unchecked. 
+    As you choose the Preview section will update to reflect your choices.
 
--   **Select device** : Choose a group of devices and/or individual devices to display on the widget. As you choose the Preview section will update to reflect your choices.
-
-![addwidget](images/choosedevices.gif)
+![addwidget](images/selectDevice.gif)
 
 -   **Device icon** : click on the icon to change the displayed image for each device.
-
--   **Icon height** : use the slider to change the image display size.
-
--   **Columns** : use the slider to change how many devices will display side by side before wrapping.
-
-![addwidget](images/chooseicon.gif)
 
 -   **Show Availability** : check to show the current status of the device - based on the fragment `c8y_Availability`.
 
@@ -83,9 +87,17 @@ The widget configuration page contains a number of configuration attributes.
 
 -   **Show operations** : Check this option to display the buttons to allow operations and toggles to be invoked.
 
+-   **Show filters** : check to display filter options at the top of widget.
+
 -   **Show at risk only** : Check this option to default the widget to display only those devices that are offline, in maintenance or have alarms.
 
 ![addwidget](images/operations.gif)
+
+**Dashboard Settings(Application Builder & Blueprint Forge Only):** This feature is available only in application builder and Blueprint Forge. User can navigate to any other dashboard by providing below details:
+-   **Device Type:** Select a device type. Navigation will be applied to all devices/assets of this device/asset type to a specific dashboard.
+-   **Dashboard ID:** Dashboard ID of a dashboard where user need to navigate. You can find dashboard id in browser URL.
+-   **DeviceId as TabGroup:** Select this option only if you are using Group Template as dashboard in application builder and selected deviceId as tabgroup field during group template configuration.
+-   **TabGroup ID(optional):** If your dashboard is based on tabgroup then provide tabgroup id.
 
 **Select operations or add toggles**
 
@@ -125,17 +137,17 @@ You can use this widget with a group template dashboard:
 
 ![addwidget](images/templatedashboard.png)
 
-for example the Laboratory group in my examples above:
+for example the wind turbines group in my examples above:
 
-![addwidget](images/groupdashboard.png)
+![addwidget](images/windTurbineGroup.png)
 
 Now each page can have a widget that displays the device linked to the route selected.
 
-![addwidget](images/grouptemplate.gif)
+![addwidget](images/windTurbineGroupTemplate.gif)
 
-Additionally you can set up a link from the individual devices on the widget to the individuals group page:
+Additionally you can set up a link from the individual devices on the widget to the individuals group page with dashboard settings:
 
-![addwidget](images/grouplinks.gif)
+![addwidget](images/dashBoardSettings.gif)
 
 ## Widget display
 
