@@ -93,7 +93,7 @@ The widget configuration page contains a number of configuration attributes.
 
 ![addwidget](images/operations.gif)
 
-**Dashboard Settings(Application Builder Only):** This feature is available only in application builder. User can navigate to any other dashboard by providing below details:
+**Dashboard Settings(Application Builder & Blueprint Forge Only):** This feature is available only in application builder. User can navigate to any other dashboard by providing below details:
 -   **Device Type:** Select a device type. Navigation will be applied to all devices/assets of this device/asset type to a specific dashboard.
 -   **Dashboard ID:** Dashboard ID of a dashboard where user need to navigate. You can find dashboard id in browser URL.
 -   **DeviceId as TabGroup:** Select this option only if you are using Group Template as dashboard in application builder and selected deviceId as tabgroup field during group template configuration.
@@ -137,17 +137,17 @@ You can use this widget with a group template dashboard:
 
 ![addwidget](images/templatedashboard.png)
 
-for example the Laboratory group in my examples above:
+for example the wind turbines group in my examples above:
 
-![addwidget](images/groupdashboard.png)
+![addwidget](images/windTurbineGroup.png)
 
 Now each page can have a widget that displays the device linked to the route selected.
 
-![addwidget](images/grouptemplate.gif)
+![addwidget](images/windTurbineGroupTemplate.gif)
 
-Additionally you can set up a link from the individual devices on the widget to the individuals group page:
+Additionally you can set up a link from the individual devices on the widget to the individuals group page with dashboard settings:
 
-![addwidget](images/grouplinks.gif)
+![addwidget](images/dashBoardSettings.gif)
 
 ## Widget display
 
