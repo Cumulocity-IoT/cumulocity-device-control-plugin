@@ -1,5 +1,5 @@
 
-# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.2/sag-ps-pkg-device-control-widget-1.1.2.zip)
+# Device control and status widget [<img width="35" src="https://user-images.githubusercontent.com/32765455/211497905-561e9197-18b9-43d5-a023-071d3635f4eb.png"/>](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.2.1/sag-ps-pkg-device-control-widget-1.2.1.zip)
 
   
 
@@ -38,7 +38,7 @@ This widget allows display and control of devices and groups of devices.
 
 ### Runtime Widget Deployment?
 
-* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.1.2/sag-ps-pkg-device-control-widget-1.1.2.zip) and install via Administrations --> Ecosystems --> Applications --> Packages.
+* This widget support runtime deployment. Download [Runtime Binary](https://github.com/SoftwareAG/cumulocity-device-control-plugin/releases/download/1.2.1/sag-ps-pkg-device-control-widget-1.2.1.zip) and install via Administrations --> Ecosystems --> Applications --> Packages.
 
 
 ## QuickStart
@@ -59,23 +59,27 @@ Congratulations! Device Control Widget is configured.
 
 The widget configuration page contains a number of configuration attributes.
 
-![addwidget](images/initialoptions.png)
+![addwidget](images/defaultConfiguration.png)
 
 -   **Title** : Enter the title which will display at the top of your widget
 
+**Layout Options**
+
+-   **Display as** : Select widget's display option from the dropdown.
+-   **List view settings** 
+    -   **Table inputs** : select the fields to show in list/table view.
+
 **Device Options**
+-   **Show child devices/assets** : check to show the child devices/assets of group to be selected.
+-   **Page size** : select the number of child devices/assets to show in the page.
+-   **Select device** : 
+    -   Choose a single group of device/asset when `Show child devices/assets` is checked. 
+    -   Choose one or more device/asset when `Show child devices/assets` is unchecked. 
+    As you choose the Preview section will update to reflect your choices.
 
--   **Select device** : Choose a group of devices and/or individual devices to display on the widget. As you choose the Preview section will update to reflect your choices.
-
-![addwidget](images/choosedevices.gif)
+![addwidget](images/selectDevice.gif)
 
 -   **Device icon** : click on the icon to change the displayed image for each device.
-
--   **Icon height** : use the slider to change the image display size.
-
--   **Columns** : use the slider to change how many devices will display side by side before wrapping.
-
-![addwidget](images/chooseicon.gif)
 
 -   **Show Availability** : check to show the current status of the device - based on the fragment `c8y_Availability`.
 
@@ -83,9 +87,17 @@ The widget configuration page contains a number of configuration attributes.
 
 -   **Show operations** : Check this option to display the buttons to allow operations and toggles to be invoked.
 
+-   **Show filters** : check to display filter options at the top of widget.
+
 -   **Show at risk only** : Check this option to default the widget to display only those devices that are offline, in maintenance or have alarms.
 
 ![addwidget](images/operations.gif)
+
+**Dashboard Settings(Application Builder Only):** This feature is available only in application builder. User can navigate to any other dashboard by providing below details:
+-   **Device Type:** Select a device type. Navigation will be applied to all devices/assets of this device/asset type to a specific dashboard.
+-   **Dashboard ID:** Dashboard ID of a dashboard where user need to navigate. You can find dashboard id in browser URL.
+-   **DeviceId as TabGroup:** Select this option only if you are using Group Template as dashboard in application builder and selected deviceId as tabgroup field during group template configuration.
+-   **TabGroup ID(optional):** If your dashboard is based on tabgroup then provide tabgroup id.
 
 **Select operations or add toggles**
 
