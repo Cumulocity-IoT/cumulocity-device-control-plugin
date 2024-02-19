@@ -143,7 +143,7 @@ for example the wind turbines group in my examples above:
 
 Now each page can have a widget that displays the device linked to the route selected.
 
-![addwidget](images/windTurbineGroupTemplate962.gif)
+![addwidget](images/windTurbineGroupTemplate.gif)
 
 Additionally you can set up a link from the individual devices on the widget to the individuals group page with dashboard settings:
 
