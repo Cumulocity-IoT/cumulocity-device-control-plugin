@@ -93,7 +93,7 @@ The widget configuration page contains a number of configuration attributes.
 
 ![addwidget](images/operations.gif)
 
-**Dashboard Settings(Application Builder & Blueprint Forge Only):** This feature is available only in application builder. User can navigate to any other dashboard by providing below details:
+**Dashboard Settings(Application Builder & Blueprint Forge Only):** This feature is available only in application builder and Blueprint Forge. User can navigate to any other dashboard by providing below details:
 -   **Device Type:** Select a device type. Navigation will be applied to all devices/assets of this device/asset type to a specific dashboard.
 -   **Dashboard ID:** Dashboard ID of a dashboard where user need to navigate. You can find dashboard id in browser URL.
 -   **DeviceId as TabGroup:** Select this option only if you are using Group Template as dashboard in application builder and selected deviceId as tabgroup field during group template configuration.
