@@ -77,7 +77,7 @@ The widget configuration page contains a number of configuration attributes.
     -   Choose one or more device/asset when `Show child devices/assets` is unchecked. 
     As you choose the Preview section will update to reflect your choices.
 
-![addwidget](images/selectDevice.gif)
+![addwidget](images/selectDevice962.gif)
 
 -   **Device icon** : click on the icon to change the displayed image for each device.
 
@@ -143,11 +143,11 @@ for example the wind turbines group in my examples above:
 
 Now each page can have a widget that displays the device linked to the route selected.
 
-![addwidget](images/windTurbineGroupTemplate.gif)
+![addwidget](images/windTurbineGroupTemplate962.gif)
 
 Additionally you can set up a link from the individual devices on the widget to the individuals group page with dashboard settings:
 
-![addwidget](images/dashBoardSettings.gif)
+![addwidget](images/dashboardSettings962.gif)
 
 ## Widget display
 
