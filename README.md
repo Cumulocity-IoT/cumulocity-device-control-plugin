@@ -147,7 +147,7 @@ Now each page can have a widget that displays the device linked to the route sel
 
 Additionally you can set up a link from the individual devices on the widget to the individuals group page with dashboard settings:
 
-![addwidget](images/dashboardSettings.gif)
+![addwidget](images/dashBoardSettings.gif)
 
 ## Widget display
 
