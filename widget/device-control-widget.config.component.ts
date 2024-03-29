@@ -271,24 +271,31 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
 
             const m = this.widgetHelper.getWidgetConfig().selectedDevices[index];
 
-            //if m is a group we should expand it
-            if (_.has(m, "c8y_IsDeviceGroup")) {
-                this.widgetHelper.getWidgetConfig().assets.push(m);//as well as add it.
-                let children = await this.widgetHelper.getDevicesForGroup(this.inventoryService, m);
-                for (const child of children) {
-                    this.widgetHelper.getWidgetConfig().addToGroup(m.name, child);
-                    this.widgetHelper.getWidgetConfig().assets.push(child);
-                    //console.log("adding", child.name );
-                    if (_.has(child, "c8y_SupportedOperations")) {
-                        r.push(...child.c8y_SupportedOperations);
+            // condition to check including child devices
+            if (this.widgetHelper.getWidgetConfig().includeChild) {
+                //if m is a group we should expand it
+                if (_.has(m, "c8y_IsDeviceGroup")) {
+                    this.widgetHelper.getWidgetConfig().assets.push(m);//as well as add it.
+                    let children = await this.widgetHelper.getDevicesForGroup(this.inventoryService, m);
+                    for (const child of children) {
+                        this.widgetHelper.getWidgetConfig().addToGroup(m.name, child);
+                        this.widgetHelper.getWidgetConfig().assets.push(child);
+                        //console.log("adding", child.name );
+                        if (_.has(child, "c8y_SupportedOperations")) {
+                            r.push(...child.c8y_SupportedOperations);
+                        }
                     }
+                } else if (_.has(m, "c8y_SupportedOperations")) {
+                    this.widgetHelper.getWidgetConfig().assets.push(m);
+                    r.push(...m.c8y_SupportedOperations);
+                } else {
+                    this.widgetHelper.getWidgetConfig().assets.push(m);
                 }
-            } else if (_.has(m, "c8y_SupportedOperations")) {
-                this.widgetHelper.getWidgetConfig().assets.push(m);
-                r.push(...m.c8y_SupportedOperations);
-            } else {
+            }
+            else{
                 this.widgetHelper.getWidgetConfig().assets.push(m);
             }
+
             r.push("User Defined"); //allow user to create own operation 
         }
         //unique 
@@ -297,7 +304,12 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
         // console.log("assets", this.widgetHelper.getWidgetConfig().assets);
         this.deviceTypes=[];
         this.widgetHelper.getWidgetConfig().assets.forEach((asset)=> {
-            if(asset.type && !asset.hasOwnProperty("c8y_IsDeviceGroup") && !this.deviceTypes.includes(asset.type))
+            if(this.widgetHelper.getWidgetConfig().includeChild){
+                if(asset.id != this.widgetHelper.getWidgetConfig().selectedDevices[0].id && !this.deviceTypes.includes(asset.type)){
+                    this.deviceTypes.push(asset.type);
+                }
+            }
+            else if(asset.type /*&& !asset.hasOwnProperty("c8y_IsDeviceGroup")*/ && !this.deviceTypes.includes(asset.type))   //commented group condition as required
                 this.deviceTypes.push(asset.type);
         });
         //map to objects
@@ -329,6 +341,7 @@ export class DeviceControlWidgetConfig implements OnInit, OnDestroy {
     includeChildToggle(){
         this.rawDevices = from(this.widgetHelper.getDevicesAndGroups(this.inventoryService,this.widgetHelper.getWidgetConfig().includeChild));
         this.widgetHelper.getWidgetConfig().selectedDevices=[];
+        this.deviceTypes=[];  //To clear devicetypes on toggle change
     }
 
     addToggle() {

@@ -64,7 +64,7 @@
     </ng-container>
   </div>
   <div class="configSection">
-    <h4 translate>Select one or more Devices of the same type</h4>
+    <h4 translate>Select one or more devices/assets of the same type</h4>
     <div class="row">
       <div class="form-check-inline col-sm-4">
         <input class="form-check-input" type="checkbox" name="includeChild"
@@ -86,7 +86,7 @@
     </div>
     <div class="row form-group">
       <div class="col-lg-12">
-        <label class="label-with-help" for="deviceSelector" class="label-with-help" translate>Select device
+        <label class="label-with-help" for="deviceSelector" class="label-with-help" translate>Select device/asset
                   <span class="help-icon">
             <img src="{{ CONST_HELP_IMAGE_FILE }}" alt="help tooltip"
               title="Select one or more devices for the control widget." />
@@ -104,13 +104,13 @@
       </div>
     </div>
 
-    <h4 translate>Select or upload an icon to represent the devices.</h4>
+    <h4 translate>Select or upload an icon to represent the devices/assets</h4>
     <div class="row form-group">
       <!-- icon choice -->
-      <div class="col-lg-1">
+      <div class="col-lg-2">
         <div class="input-group mb-1">
           <div class="input-group-prepend">
-            Device Icon
+            Device/asset icon
             <span class="input-group-text help-icon" id="basic-addon1">
               <input style="display: none" class="form-control" type="file" name="file-chooser" id="file-chooser"
                 (change)="handleImage($event)" accept="image/*" />
