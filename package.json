@@ -1,6 +1,6 @@
 {
   "name": "cumulocity-device-control-plugin",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "This Device Control widget allows to display and control devices and groups of devices.",
   "scripts": {
     "start": "c8ycli server",
@@ -15,7 +15,7 @@
     "Plugin",
     "Widget"
   ],
-  "author": "Sabreen Irfana- Software AG, Global Presales",
+  "author": "Sabreen Irfana",
   "license": "Apache-2.0",
   "dependencies": {
     "@angular/animations": "14.0.6",
